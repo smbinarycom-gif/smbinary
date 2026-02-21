@@ -4,12 +4,35 @@ import { Asset, CandleData, Trade, MarketSettings, User, AssetType, PaymentReque
 import { INITIAL_ASSETS } from './shared/constants.ts';
 import UserPanel from './user/UserPanel.tsx';
 import AdminPanel from './admin/AdminPanel.tsx';
-import PortalSelection from './portal/PortalSelection.tsx';
 import { ToastContainer, notify } from './shared/notify';
 import { ConfirmDialog } from './shared/confirm';
 
 const App: React.FC = () => {
-  const [viewMode, setViewMode] = useState<'SELECT' | 'USER' | 'ADMIN'>('SELECT');
+  const [viewMode, setViewMode] = useState<'USER' | 'ADMIN'>(() => {
+    if (typeof window !== 'undefined' && window.location.pathname === '/st') return 'ADMIN';
+    return 'USER';
+  });
+
+  useEffect(() => {
+    const handlePopState = () => {
+      if (typeof window === 'undefined') return;
+      setViewMode(window.location.pathname === '/st' ? 'ADMIN' : 'USER');
+    };
+    window.addEventListener('popstate', handlePopState);
+    return () => window.removeEventListener('popstate', handlePopState);
+  }, []);
+
+  const navigateTo = (mode: 'USER' | 'ADMIN') => {
+    if (typeof window === 'undefined') {
+      setViewMode(mode);
+      return;
+    }
+    const targetPath = mode === 'ADMIN' ? '/st' : '/';
+    if (window.location.pathname !== targetPath) {
+      window.history.pushState({}, '', targetPath);
+    }
+    setViewMode(mode);
+  };
   
   // Managed Assets State
   const [assets, setAssets] = useState<Asset[]>(INITIAL_ASSETS);
@@ -355,7 +378,6 @@ const App: React.FC = () => {
     }, ...prev]);
   };
 
-  if (viewMode === 'SELECT') return <PortalSelection onSelect={setViewMode} />;
   const visibleAssets = assets.filter(a => marketSettings.activeSymbols.includes(a.symbol));
 
   return (
@@ -372,7 +394,7 @@ const App: React.FC = () => {
           setSelectedTimeFrame={setSelectedTimeFrame} marketSettings={marketSettings}
           effectivePayout={Math.round(selectedAsset.payout * marketSettings.payoutMultiplier)} 
           handleTrade={handleTrade} visibleAssets={visibleAssets}
-          onExit={() => setViewMode('SELECT')} paymentRequests={paymentRequests}
+          onExit={() => navigateTo('USER')} paymentRequests={paymentRequests}
           onDeposit={handleDepositRequest} onWithdraw={handleWithdrawRequest}
         />
       ) : (
