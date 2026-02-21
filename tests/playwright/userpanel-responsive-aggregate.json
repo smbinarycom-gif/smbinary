@@ -1,0 +1,132 @@
+{
+  "iPhone_SE": {
+    "w": 320,
+    "h": 568,
+    "issues": [
+      "TEXT_OVERFLOW:DIV,DIV,DIV,BUTTON,SPAN,BUTTON"
+    ]
+  },
+  "iPhone_XR": {
+    "w": 414,
+    "h": 896,
+    "issues": [
+      "TEXT_OVERFLOW:DIV,DIV,DIV,BUTTON,SPAN,BUTTON"
+    ]
+  },
+  "iPhone_12_Pro": {
+    "w": 390,
+    "h": 664,
+    "issues": [
+      "TEXT_OVERFLOW:DIV,DIV,DIV,BUTTON,SPAN,BUTTON"
+    ]
+  },
+  "iPhone_14_Pro_Max": {
+    "w": 430,
+    "h": 740,
+    "issues": [
+      "TEXT_OVERFLOW:DIV,DIV,DIV,BUTTON,BUTTON,BUTTON"
+    ]
+  },
+  "Pixel_7": {
+    "w": 412,
+    "h": 839,
+    "issues": [
+      "TEXT_OVERFLOW:DIV,DIV,DIV,BUTTON,SPAN,BUTTON"
+    ]
+  },
+  "Galaxy_S8_plus": {
+    "w": 360,
+    "h": 740,
+    "issues": [
+      "TEXT_OVERFLOW:DIV,DIV,DIV,BUTTON,SPAN,BUTTON"
+    ]
+  },
+  "Galaxy_S20_Ultra": {
+    "w": 1280,
+    "h": 720,
+    "issues": [
+      "SMALL_TOUCH:BUTTON,BUTTON,BUTTON,BUTTON,BUTTON",
+      "TEXT_OVERFLOW:DIV"
+    ]
+  },
+  "iPad_Mini": {
+    "w": 768,
+    "h": 1024,
+    "issues": [
+      "SMALL_TOUCH:INPUT",
+      "TEXT_OVERFLOW:ASIDE,DIV,BUTTON,BUTTON,BUTTON,BUTTON"
+    ]
+  },
+  "iPad_Air": {
+    "w": 1280,
+    "h": 720,
+    "issues": [
+      "SMALL_TOUCH:BUTTON,BUTTON,BUTTON,BUTTON,BUTTON",
+      "TEXT_OVERFLOW:DIV"
+    ]
+  },
+  "iPad_Pro": {
+    "w": 1280,
+    "h": 720,
+    "issues": [
+      "SMALL_TOUCH:BUTTON,BUTTON,BUTTON,BUTTON,BUTTON",
+      "TEXT_OVERFLOW:DIV"
+    ]
+  },
+  "Surface_Pro_7": {
+    "w": 1366,
+    "h": 768,
+    "issues": [
+      "SMALL_TOUCH:BUTTON,BUTTON,BUTTON,BUTTON,BUTTON",
+      "TEXT_OVERFLOW:DIV"
+    ]
+  },
+  "Surface_Duo": {
+    "w": 1280,
+    "h": 720,
+    "issues": [
+      "SMALL_TOUCH:BUTTON,BUTTON,BUTTON,BUTTON,BUTTON",
+      "TEXT_OVERFLOW:DIV"
+    ]
+  },
+  "Galaxy_Z_Fold_5": {
+    "w": 904,
+    "h": 2316,
+    "issues": [
+      "SMALL_TOUCH:INPUT",
+      "TEXT_OVERFLOW:ASIDE,DIV,BUTTON,BUTTON,BUTTON,BUTTON"
+    ]
+  },
+  "Asus_Zenbook_Fold": {
+    "w": 1536,
+    "h": 1024,
+    "issues": [
+      "SMALL_TOUCH:BUTTON,BUTTON,BUTTON,BUTTON,BUTTON",
+      "TEXT_OVERFLOW:DIV"
+    ]
+  },
+  "Galaxy_A51_71": {
+    "w": 412,
+    "h": 915,
+    "issues": [
+      "TEXT_OVERFLOW:DIV,DIV,DIV,BUTTON,SPAN,BUTTON"
+    ]
+  },
+  "Nest_Hub": {
+    "w": 1024,
+    "h": 600,
+    "issues": [
+      "OFFSCREEN:I,SPAN",
+      "SMALL_TOUCH:INPUT",
+      "TEXT_OVERFLOW:ASIDE,DIV,BUTTON,BUTTON,BUTTON,BUTTON"
+    ]
+  },
+  "Nest_Hub_Max": {
+    "w": 1280,
+    "h": 800,
+    "issues": [
+      "SMALL_TOUCH:BUTTON,BUTTON,BUTTON,BUTTON,BUTTON",
+      "TEXT_OVERFLOW:DIV"
+    ]
+  }
+}

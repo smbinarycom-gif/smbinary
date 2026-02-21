@@ -1,0 +1,65 @@
+{
+  "iPhone_SE": {
+    "width": 320,
+    "height": 568,
+    "issues": [
+      "OFFSCREEN_ELEMENTS: DIV.text-center.space-y-2, DIV.inline-block.px-4, SPAN.text-[10px].font-black, H1.text-5xl.lg:text-7xl, SPAN.text-[#8b5cf6]"
+    ]
+  },
+  "iPhone_12": {
+    "width": 390,
+    "height": 664,
+    "issues": [
+      "OFFSCREEN_ELEMENTS: DIV.text-center.space-y-2, DIV.inline-block.px-4, SPAN.text-[10px].font-black, H1.text-5xl.lg:text-7xl, SPAN.text-[#8b5cf6]"
+    ]
+  },
+  "Pixel_5": {
+    "width": 393,
+    "height": 727,
+    "issues": [
+      "OFFSCREEN_ELEMENTS: DIV.inline-block.px-4, SPAN.text-[10px].font-black, DIV.flex.items-center, DIV.w-1.5.h-1.5, SPAN.text-[9px].font-black"
+    ]
+  },
+  "Galaxy_S20": {
+    "width": 1280,
+    "height": 720,
+    "issues": []
+  },
+  "iPad_gen7": {
+    "width": 810,
+    "height": 1080,
+    "issues": []
+  },
+  "Desktop_1366x768": {
+    "width": 1366,
+    "height": 768,
+    "issues": []
+  },
+  "SmallPhone_320x568": {
+    "width": 320,
+    "height": 568,
+    "issues": [
+      "OFFSCREEN_ELEMENTS: DIV.text-center.space-y-2, DIV.inline-block.px-4, SPAN.text-[10px].font-black, H1.text-5xl.lg:text-7xl, SPAN.text-[#8b5cf6]"
+    ]
+  },
+  "LargePhone_412x915": {
+    "width": 412,
+    "height": 915,
+    "issues": []
+  },
+  "Tablet_768x1024": {
+    "width": 768,
+    "height": 1024,
+    "issues": []
+  },
+  "Desktop_1440x900": {
+    "width": 1440,
+    "height": 900,
+    "issues": []
+  },
+  "Desktop_1920x1080": {
+    "width": 1920,
+    "height": 1080,
+    "issues": []
+  }
+}

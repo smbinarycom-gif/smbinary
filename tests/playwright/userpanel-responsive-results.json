@@ -1,0 +1,21 @@
+{
+  "Nest_Hub": {
+    "w": 1024,
+    "h": 600,
+    "issues": [
+      "OFFSCREEN:I,SPAN",
+      "SMALL_TOUCH:INPUT",
+      "TEXT_OVERFLOW:ASIDE,DIV,BUTTON,BUTTON,BUTTON,BUTTON",
+      "FIXED:BUTTON"
+    ]
+  },
+  "Nest_Hub_Max": {
+    "w": 1280,
+    "h": 800,
+    "issues": [
+      "SMALL_TOUCH:BUTTON,BUTTON,BUTTON,BUTTON,BUTTON",
+      "TEXT_OVERFLOW:DIV",
+      "FIXED:BUTTON"
+    ]
+  }
+}

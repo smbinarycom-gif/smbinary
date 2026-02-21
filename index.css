@@ -1,0 +1,212 @@
+/* Global responsive helpers for cross-device compatibility */
+:root{
+  --ui-bg: #131722;
+  --ui-panel: #1e222d;
+  --ui-muted: #7d8699;
+  --base-font: 16px;
+}
+
+html{
+  box-sizing: border-box;
+  font-size: 16px; /* base, will scale with media queries */
+  -webkit-text-size-adjust: 100%;
+}
+*, *:before, *:after{box-sizing: inherit}
+
+body{
+  margin:0;
+  font-family: var(--font-primary, Inter), system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial;
+  background: var(--ui-bg);
+  color: #e6eef8;
+}
+
+/* Layout container and grid utilities for consistent centered layouts on large screens */
+.app-container{width:100%;max-width:1280px;margin:0 auto;padding-left:12px;padding-right:12px}
+.centered-content{max-width:1100px;margin:0 auto}
+
+/* Prevent any accidental horizontal scrolling across all devices */
+html,body{overflow-x:hidden}
+
+/* Responsive grid: main content + side panels (trades, orderbook, widgets) */
+.responsive-grid{display:grid;grid-template-columns:1fr;gap:16px}
+@media (min-width:768px){.responsive-grid{grid-template-columns:1fr 360px}}
+@media (min-width:1200px){.responsive-grid{grid-template-columns:1fr 420px}}
+
+/* Foldable / dual-screen helper — gracefully stack on narrow single fold */
+.foldable-two-pane{display:flex;gap:16px;flex-wrap:nowrap}
+@media (max-width:900px){.foldable-two-pane{flex-direction:column}}
+
+/* Utility to force stacking on mobile and compact two-column on larger screens */
+.stack-on-mobile{display:block}
+@media (min-width:768px){.stack-on-mobile{display:flex;gap:12px}}
+
+
+/* Responsive root font sizing (improves readability across devices) */
+@media (max-width: 640px){ /* phones */
+  html{font-size: 15px}
+}
+@media (min-width: 641px) and (max-width: 1024px){ /* tablets */
+  html{font-size: 15.5px}
+}
+@media (min-width: 1025px){ /* desktop */
+  html{font-size: 16px}
+}
+
+/* Safe-area support (iPhone notch / home indicator) */
+.app-safe-top{padding-top: env(safe-area-inset-top)}
+.app-safe-bottom{padding-bottom: env(safe-area-inset-bottom)}
+
+/* Make images and SVGs responsive */
+img, picture, svg{max-width:100%;height:auto;display:block}
+
+/* Chart container should be flexible; lightweight-charts uses parent size */
+.chart-container{width:100%;height:100%;min-height:220px}
+
+/* Buttons and touch targets: ensure minimum tap size without breaking icon-only controls */
+button{
+  -webkit-tap-highlight-color: transparent;
+  touch-action: manipulation;
+}
+
+/* Small icon buttons keep their look, but ensure accessible tap area using ::before hitbox */
+.icon-btn{position:relative}
+.icon-btn::before{content:"";position:absolute;inset: -8px; /* increases hit area */}
+
+/* Generic accessible minimum tap target for primary actions */
+.btn-primary, .btn, button.primary-action{min-height:44px;min-width:44px;padding:.5rem 0.75rem}
+
+/* Prevent double scroll inside full-screen modals: modal content should handle scroll */
+.modal-outer{overflow:hidden}
+.modal-inner{overflow-y:auto; -webkit-overflow-scrolling:touch}
+
+/* Reduce animation for prefers-reduced-motion */
+@media (prefers-reduced-motion: reduce){
+  *{transition:none!important;animation:none!important}
+}
+
+/* Low-bandwidth mode: reduce heavy visuals */
+@media (prefers-reduced-data: reduce){
+  .heavy-graphics, .animated-bg, .chart-animations{opacity:.6}
+}
+
+/* Utility: hide scrollbars but allow scrolling (for modern browsers) */
+.hide-scrollbar{ -ms-overflow-style: none; scrollbar-width: none; }
+.hide-scrollbar::-webkit-scrollbar{ display:none }
+
+/* Common overflow helpers for panels */
+.panel-scroll{overflow-y:auto; -webkit-overflow-scrolling: touch}
+
+/* Prevent accidental text-selection on touch while allowing selection on desktop using a simple override */
+@media (max-width: 1024px){
+  body{user-select:none}
+}
+@media (min-width: 1025px){
+  body{user-select:text}
+}
+
+/* Make sure modals use full-bleed on small screens */
+.bottom-sheet{position:fixed;left:0;right:0;bottom:0;top:auto;height:100%;max-height:100%;border-radius:0}
+@media (min-width: 768px){
+  .bottom-sheet{max-height:85vh;border-radius:12px;left:50%;transform:translateX(-50%);width:calc(100% - 48px);top:50%;bottom:auto;transform:none}
+}
+
+/* Loading / low-bandwidth placeholders */
+.skeleton{background:linear-gradient(90deg, rgba(255,255,255,0.03) 0%, rgba(255,255,255,0.06) 50%, rgba(255,255,255,0.03) 100%);background-size:200% 100%;animation:shimmer 1.6s linear infinite}
+@keyframes shimmer{0%{background-position:200% 0}100%{background-position:-200% 0}}
+
+/* Small helpers used in codebase */
+.pb-safe{padding-bottom: env(safe-area-inset-bottom, 16px)}
+.pt-safe{padding-top: env(safe-area-inset-top, 12px)}
+
+/* Ensure forms are responsive */
+.form-row{display:flex;flex-wrap:wrap;gap:.5rem}
+.form-row > *{flex:1 1 120px}
+
+/* Make tables responsive */
+.responsive-table{width:100%;overflow:auto}
+
+/* iPhone 12 Pro / small-screen specific tweaks */
+@media (max-width: 420px) {
+  /* Topbar adjustments: prevent overlap, allow truncation */
+  .mobile-topbar { padding-left: 12px; padding-right: 12px; }
+  .mobile-topbar .truncate { max-width: 140px; }
+
+  /* Chart should use full device width, remove parent paddings that cause gaps */
+  .chart-bleed { width: 100vw; position: relative; left: 50%; right: 50%; margin-left: -50vw; margin-right: -50vw; }
+  .chart-bleed > div { width: 100% !important; }
+
+  /* Compact asset row reduces horizontal paddings and stacks if needed */
+  .compact-asset-row { padding-left: 12px; padding-right: 12px; }
+  .compact-asset-row .truncate { max-width: 140px; }
+
+  /* Mobile trade panel spacing and touch targets */
+  .mobile-trade-panel { padding-left: 12px; padding-right: 12px; }
+  .mobile-trade-panel .h-11 { min-height: 44px; height:44px }
+  .mobile-trade-panel .w-8, .mobile-trade-panel .h-8 { width:44px; height:44px }
+
+  /* Bottom navigation: increase hit area and safe padding */
+  .mobile-bottom-nav { height:64px; padding-bottom: env(safe-area-inset-bottom, 12px); }
+  .mobile-bottom-nav button { min-height:44px; min-width:44px; padding-top:4px }
+
+  /* Specific styling for mobile nav buttons */
+  .mobile-nav-btn { padding-top:6px; padding-bottom:6px }
+  .mobile-nav-btn i { display:block }
+
+  /* Prevent footer gaps when content scrolls to bottom */
+  .mobile-trade-panel, .chart-bleed { box-sizing: border-box }
+}
+
+/* Additional mobile-friendly fallbacks to ensure tap targets and text wrap across many devices */
+@media (max-width: 1024px) {
+  button, a[role="button"], .mobile-nav-btn { position: relative; min-width: 44px; min-height: 44px; padding: 6px 8px; }
+  /* For icon-only controls preserve visual size but increase hit area */
+  button::after, .icon-btn::after { content: ""; position: absolute; left: -8px; top: -8px; right: -8px; bottom: -8px; pointer-events: auto; }
+
+  /* Allow long words to wrap to avoid horizontal overflow or clipped labels */
+  span, p, div, a, button { overflow-wrap: anywhere; word-break: break-word; }
+
+  /* Ensure chart containers and panels do not cause horizontal scroll */
+  .chart-bleed, .mobile-trade-panel, .compact-asset-row { box-sizing: border-box; padding-left: 12px; padding-right: 12px; }
+}
+
+/* Final notes: developers can add `.low-bandwidth` on body to disable heavy visuals for users */
+
+/* End of index.css */
+
+/* Device-class hooks applied by shared/detectDevice.ts */
+.device-mobile .mobile-topbar, .device-mobile .mobile-bottom-nav { display: flex }
+.device-tablet .mobile-topbar { padding-left: 16px; padding-right: 16px }
+.device-desktop .mobile-topbar { display: none }
+.device-foldable .foldable-two-pane { gap: 6px }
+.device-foldable .chart-bleed { padding-left: 0; padding-right: 0 }
+.device-low-end * { transition: none !important; animation: none !important }
+.device-touch button, .device-touch .mobile-nav-btn { touch-action: manipulation }
+
+/* Safety: ensure device classes do not introduce overflow */
+.device-mobile, .device-tablet, .device-desktop { overflow-x: hidden }
+
+/* Ensure deposit button and important header controls stay visible above overlays */
+.mobile-topbar { z-index: 50; position: relative }
+.mobile-bottom-nav { z-index: 48; position: relative }
+.btn-deposit{ position: relative; z-index: 60; min-width:64px; min-height:44px }
+
+/* Increase chart min-height for small screens so chart remains visible */
+@media (max-width: 480px){
+  .chart-bleed, .chart-container, .chart-bleed > div { min-height: 260px }
+}
+
+/* Slightly larger tap targets on mobile/tablet */
+@media (max-width: 1024px){
+  button, .mobile-nav-btn, .icon-btn { min-height:44px; min-width:44px; padding:8px 10px }
+}
+
+/* Prevent header overlays from hiding key CTA on small screens */
+.modal-outer, .bottom-sheet { z-index: 70 }
+
+/* Floating deposit CTA for mobile/tablet */
+.floating-deposit{display:none}
+.floating-deposit:active{transform:scale(.98)}
+
+
+
+

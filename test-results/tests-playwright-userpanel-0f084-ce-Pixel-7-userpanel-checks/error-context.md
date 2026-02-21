@@ -1,0 +1,87 @@
+# Page snapshot
+
+```yaml
+- generic [ref=e4]:
+  - text:               +    
+  - generic [ref=e5]:
+    - banner [ref=e6]:
+      - generic [ref=e7]:
+        - button " DEMO $10,000.00 " [ref=e8] [cursor=pointer]:
+          - generic [ref=e10]: 
+          - generic [ref=e11]:
+            - generic [ref=e12]: DEMO
+            - generic [ref=e13]: $10,000.00
+          - generic [ref=e14]: 
+        - button " 2" [ref=e15] [cursor=pointer]:
+          - generic [ref=e16]: 
+          - generic [ref=e18]: "2"
+      - button "Deposit" [ref=e19] [cursor=pointer]
+    - generic [ref=e20]:
+      - generic [ref=e22]:
+        - table [ref=e25]:
+          - row [ref=e26]:
+            - cell
+            - cell [ref=e27]
+            - cell [ref=e31]
+          - row [ref=e35]:
+            - cell
+            - cell [ref=e36]
+            - cell [ref=e40]
+        - img
+        - generic:
+          - generic:
+            - generic: 00:20
+        - generic [ref=e44]:
+          - button "" [ref=e45] [cursor=pointer]:
+            - generic [ref=e46]: 
+          - button "1m" [ref=e47] [cursor=pointer]
+          - button "" [ref=e48] [cursor=pointer]:
+            - generic [ref=e49]: 
+          - button "" [ref=e50] [cursor=pointer]:
+            - generic [ref=e51]: 
+      - generic [ref=e52]:
+        - button "BTC USDT BTC (OTC) 82% " [ref=e53] [cursor=pointer]:
+          - generic [ref=e54]:
+            - img "BTC" [ref=e55]
+            - img "USDT" [ref=e56]
+          - generic [ref=e57]: BTC (OTC)
+          - generic [ref=e58]: 82%
+          - generic [ref=e59]: 
+        - generic [ref=e62]: 17:20:40 UTC
+      - generic [ref=e64]:
+        - generic [ref=e65]:
+          - button "Time (UTC) 17:21" [ref=e67] [cursor=pointer]:
+            - generic [ref=e68]: Time (UTC)
+            - generic [ref=e69]: 17:21
+          - generic [ref=e70]:
+            - generic [ref=e71]: Investment
+            - button "" [ref=e72] [cursor=pointer]:
+              - generic [ref=e73]: 
+            - generic [ref=e74]: 1 $
+            - button "+" [ref=e75] [cursor=pointer]:
+              - generic [ref=e76]: +
+        - generic [ref=e77]:
+          - text: "Payout:"
+          - generic [ref=e78]: 1.82 $
+        - generic [ref=e79]:
+          - button " BUY" [ref=e80] [cursor=pointer]:
+            - generic [ref=e81]: 
+            - generic [ref=e82]: BUY
+          - button " SELL" [ref=e83] [cursor=pointer]:
+            - generic [ref=e84]: 
+            - generic [ref=e85]: SELL
+    - navigation [ref=e86]:
+      - button "Trade" [ref=e87] [cursor=pointer]:
+        - generic [ref=e88]: 
+        - generic [ref=e89]: Trade
+      - button "Top" [ref=e90] [cursor=pointer]:
+        - generic [ref=e91]: 
+        - generic [ref=e92]: Top
+      - button "Markets" [ref=e93] [cursor=pointer]:
+        - generic [ref=e94]: 
+        - generic [ref=e95]: Markets
+      - button "Wallets" [ref=e96] [cursor=pointer]:
+        - generic [ref=e97]: 
+        - generic [ref=e98]: Wallets
+  - button "Deposit" [ref=e99] [cursor=pointer]
+```
