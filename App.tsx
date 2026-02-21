@@ -4,14 +4,190 @@ import { Asset, CandleData, Trade, MarketSettings, User, AssetType, PaymentReque
 import { INITIAL_ASSETS } from './shared/constants.ts';
 import UserPanel from './user/UserPanel.tsx';
 import AdminPanel from './admin/AdminPanel.tsx';
+import OptionsTradingHomePage from './components/OptionsTradingHomePage.tsx';
 import { ToastContainer, notify } from './shared/notify';
 import { ConfirmDialog } from './shared/confirm';
+
+interface StoredUser {
+  email: string;
+  password: string;
+  name: string;
+  createdAt: number;
+}
+
+interface UserAuthScreenProps {
+  onSubmit: (
+    mode: 'LOGIN' | 'SIGNUP',
+    payload: { email: string; password: string; name?: string }
+  ) => void;
+  embedded?: boolean;
+}
+
+const UserAuthScreen: React.FC<UserAuthScreenProps> = ({ onSubmit, embedded }) => {
+  const [mode, setMode] = useState<'LOGIN' | 'SIGNUP'>('LOGIN');
+  const [name, setName] = useState('');
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+  const [loading, setLoading] = useState(false);
+
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!email || !password || (mode === 'SIGNUP' && !name)) return;
+    setLoading(true);
+    onSubmit(mode, { email: email.trim(), password, name: name.trim() || undefined });
+    setLoading(false);
+  };
+
+  const content = (
+      <div className="w-full max-w-md bg-[#020617] border border-white/5 rounded-3xl shadow-2xl shadow-black/60 p-6 sm:p-8 space-y-6">
+        <div className="text-center space-y-2">
+          <h1 className="text-2xl sm:text-3xl font-black tracking-tight">GEMINI<span className="text-[#0ecb81]">X</span></h1>
+          <p className="text-xs text-slate-400 font-semibold uppercase tracking-[0.25em]">
+            Secure Trading Access
+          </p>
+        </div>
+
+        <div className="flex bg-black/40 rounded-full p-1 border border-white/5 text-[11px] font-bold uppercase tracking-wide">
+          <button
+            type="button"
+            onClick={() => setMode('LOGIN')}
+            className={`flex-1 py-2 rounded-full transition-colors ${
+              mode === 'LOGIN'
+                ? 'bg-[#0ecb81] text-black'
+                : 'text-slate-400 hover:text-white'
+            }`}
+          >
+            Login
+          </button>
+          <button
+            type="button"
+            onClick={() => setMode('SIGNUP')}
+            className={`flex-1 py-2 rounded-full transition-colors ${
+              mode === 'SIGNUP'
+                ? 'bg-[#22c55e]/10 text-[#22c55e]'
+                : 'text-slate-400 hover:text-white'
+            }`}
+          >
+            Sign Up
+          </button>
+        </div>
+
+        <form onSubmit={handleSubmit} className="space-y-4 text-sm">
+          {mode === 'SIGNUP' && (
+            <div className="space-y-1">
+              <label className="text-[11px] font-semibold text-slate-400 uppercase tracking-wide">
+                Full Name
+              </label>
+              <input
+                type="text"
+                value={name}
+                onChange={(e) => setName(e.target.value)}
+                className="w-full rounded-lg bg-black/40 border border-white/10 px-3 py-2 text-xs focus:outline-none focus:border-[#0ecb81]"
+                placeholder="John Doe"
+              />
+            </div>
+          )}
+
+          <div className="space-y-1">
+            <label className="text-[11px] font-semibold text-slate-400 uppercase tracking-wide">
+              Email
+            </label>
+            <input
+              type="email"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              className="w-full rounded-lg bg-black/40 border border-white/10 px-3 py-2 text-xs focus:outline-none focus:border-[#0ecb81]"
+              placeholder="you@example.com"
+            />
+          </div>
+
+          <div className="space-y-1">
+            <label className="text-[11px] font-semibold text-slate-400 uppercase tracking-wide">
+              Password
+            </label>
+            <input
+              type="password"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              className="w-full rounded-lg bg-black/40 border border-white/10 px-3 py-2 text-xs focus:outline-none focus:border-[#0ecb81]"
+              placeholder="••••••••"
+            />
+          </div>
+
+          <button
+            type="submit"
+            disabled={loading}
+            className="w-full mt-2 py-2.5 rounded-lg bg-[#0ecb81] text-black text-xs font-black uppercase tracking-[0.25em] disabled:opacity-60 disabled:pointer-events-none"
+          >
+            {mode === 'LOGIN' ? 'Enter Terminal' : 'Create Account'}
+          </button>
+
+          <p className="text-[10px] text-slate-500 text-center mt-2">
+            This is a demo auth layer (no real backend).
+          </p>
+        </form>
+      </div>
+  );
+
+  if (embedded) return content;
+
+  return (
+    <div className="flex h-[100dvh] w-screen bg-[#020617] text-white items-center justify-center px-4">
+      {content}
+    </div>
+  );
+};
+
+interface LandingPageProps {
+  onAuthSubmit: UserAuthScreenProps['onSubmit'];
+}
+
+const LandingPage: React.FC<LandingPageProps> = ({ onAuthSubmit }) => {
+  return (
+    <div className="flex h-[100dvh] w-screen bg-[#020617] text-white overflow-hidden">
+      <div className="max-w-6xl mx-auto w-full px-4 md:px-8 flex flex-col md:flex-row items-center justify-center gap-10 md:gap-16">
+        <div className="flex-1 space-y-6 text-center md:text-left">
+          <div className="inline-flex items-center px-3 py-1.5 rounded-full border border-white/10 bg-white/5 text-[10px] font-black uppercase tracking-[0.25em] text-slate-300">
+            <span className="w-1.5 h-1.5 rounded-full bg-[#0ecb81] mr-2 animate-pulse" />
+            Real-Time Binary Engine
+          </div>
+          <h1 className="text-3xl sm:text-4xl md:text-5xl font-black tracking-tight leading-tight">
+            Trade digital contracts on a
+            <span className="text-[#0ecb81]"> simulated </span>
+            engine.
+          </h1>
+          <p className="text-sm sm:text-base text-slate-400 max-w-xl mx-auto md:mx-0">
+            Practice high‑frequency binary trading with live‑like price action,
+            OTC controls and AI overlays — all in a safe demo environment.
+          </p>
+          <div className="flex flex-col sm:flex-row sm:items-center gap-3 justify-center md:justify-start text-xs">
+            <div className="flex items-center space-x-2 text-slate-400">
+              <i className="fa-solid fa-shield-halved text-[#0ecb81]" />
+              <span>Demo only · No real funds</span>
+            </div>
+            <div className="flex items-center space-x-2 text-slate-500">
+              <i className="fa-solid fa-gauge-high text-[#eab308]" />
+              <span>Lightning-fast execution</span>
+            </div>
+          </div>
+        </div>
+
+        <div className="flex-1 flex justify-center md:justify-end w-full">
+          <UserAuthScreen onSubmit={onAuthSubmit} embedded />
+        </div>
+      </div>
+    </div>
+  );
+};
 
 const App: React.FC = () => {
   const [viewMode, setViewMode] = useState<'USER' | 'ADMIN'>(() => {
     if (typeof window !== 'undefined' && window.location.pathname === '/st') return 'ADMIN';
     return 'USER';
   });
+
+  const [authUser, setAuthUser] = useState<{ email: string; name: string } | null>(null);
+  const [showAuthOverlay, setShowAuthOverlay] = useState(false);
 
   useEffect(() => {
     const handlePopState = () => {
@@ -20,6 +196,19 @@ const App: React.FC = () => {
     };
     window.addEventListener('popstate', handlePopState);
     return () => window.removeEventListener('popstate', handlePopState);
+  }, []);
+
+  useEffect(() => {
+    if (typeof window === 'undefined') return;
+    try {
+      const raw = window.localStorage.getItem('smbinary_auth_user');
+      if (raw) {
+        const parsed = JSON.parse(raw) as { email: string; name: string };
+        if (parsed && parsed.email) setAuthUser(parsed);
+      }
+    } catch {
+      // ignore
+    }
   }, []);
 
   const navigateTo = (mode: 'USER' | 'ADMIN') => {
@@ -32,6 +221,56 @@ const App: React.FC = () => {
       window.history.pushState({}, '', targetPath);
     }
     setViewMode(mode);
+  };
+
+  const handleAuthSubmit = (
+    mode: 'LOGIN' | 'SIGNUP',
+    payload: { email: string; password: string; name?: string }
+  ) => {
+    if (typeof window === 'undefined') return;
+    const key = 'smbinary_users';
+    let usersStore: StoredUser[] = [];
+    try {
+      const raw = window.localStorage.getItem(key);
+      if (raw) usersStore = JSON.parse(raw) as StoredUser[];
+    } catch {
+      usersStore = [];
+    }
+
+    const email = payload.email.toLowerCase();
+
+    if (mode === 'SIGNUP') {
+      if (usersStore.some(u => u.email === email)) {
+        notify.error('Account already exists with this email');
+        return;
+      }
+      const name = payload.name || email.split('@')[0];
+      const newUser: StoredUser = {
+        email,
+        password: payload.password,
+        name,
+        createdAt: Date.now()
+      };
+      usersStore.push(newUser);
+      window.localStorage.setItem(key, JSON.stringify(usersStore));
+      const authInfo = { email, name };
+      window.localStorage.setItem('smbinary_auth_user', JSON.stringify(authInfo));
+      setAuthUser(authInfo);
+      notify.success('Account created. Logged in as demo user.');
+      return;
+    }
+
+    const existing = usersStore.find(
+      u => u.email === email && u.password === payload.password
+    );
+    if (!existing) {
+      notify.error('Invalid email or password');
+      return;
+    }
+    const authInfo = { email: existing.email, name: existing.name };
+    window.localStorage.setItem('smbinary_auth_user', JSON.stringify(authInfo));
+    setAuthUser(authInfo);
+    notify.success('Welcome back');
   };
   
   // Managed Assets State
@@ -380,23 +619,45 @@ const App: React.FC = () => {
 
   const visibleAssets = assets.filter(a => marketSettings.activeSymbols.includes(a.symbol));
 
+  // Unauthenticated home: dedicated marketing landing + auth overlay
+  if (viewMode === 'USER' && !authUser) {
+    return (
+      <>
+        <OptionsTradingHomePage
+          onLoginClick={() => setShowAuthOverlay(true)}
+          onSignupClick={() => setShowAuthOverlay(true)}
+          onPrimaryCtaClick={() => setShowAuthOverlay(true)}
+        />
+        {showAuthOverlay && (
+          <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60">
+            <UserAuthScreen onSubmit={handleAuthSubmit} />
+          </div>
+        )}
+        <ToastContainer />
+        <ConfirmDialog />
+      </>
+    );
+  }
+
   return (
     <div className="flex h-[100dvh] w-screen bg-black text-white overflow-hidden font-sans">
       {viewMode === 'USER' ? (
-        <UserPanel 
-          selectedAsset={selectedAsset} setSelectedAsset={setSelectedAsset}
-          candleHistory={candleHistory} currentPrice={currentPrice} 
-          balance={activeAccount === 'LIVE' ? liveBalance : demoBalance}
-          accountType={activeAccount} setAccountType={setActiveAccount}
-          demoBalance={demoBalance} liveBalance={liveBalance}
-          onResetDemo={(amount) => setDemoBalance(amount !== undefined ? amount : 10000)}
-          activeTrades={activeTrades} selectedTimeFrame={selectedTimeFrame}
-          setSelectedTimeFrame={setSelectedTimeFrame} marketSettings={marketSettings}
-          effectivePayout={Math.round(selectedAsset.payout * marketSettings.payoutMultiplier)} 
-          handleTrade={handleTrade} visibleAssets={visibleAssets}
-          onExit={() => navigateTo('USER')} paymentRequests={paymentRequests}
-          onDeposit={handleDepositRequest} onWithdraw={handleWithdrawRequest}
-        />
+        authUser ? (
+          <UserPanel 
+            selectedAsset={selectedAsset} setSelectedAsset={setSelectedAsset}
+            candleHistory={candleHistory} currentPrice={currentPrice} 
+            balance={activeAccount === 'LIVE' ? liveBalance : demoBalance}
+            accountType={activeAccount} setAccountType={setActiveAccount}
+            demoBalance={demoBalance} liveBalance={liveBalance}
+            onResetDemo={(amount) => setDemoBalance(amount !== undefined ? amount : 10000)}
+            activeTrades={activeTrades} selectedTimeFrame={selectedTimeFrame}
+            setSelectedTimeFrame={setSelectedTimeFrame} marketSettings={marketSettings}
+            effectivePayout={Math.round(selectedAsset.payout * marketSettings.payoutMultiplier)} 
+            handleTrade={handleTrade} visibleAssets={visibleAssets}
+            onExit={() => navigateTo('USER')} paymentRequests={paymentRequests}
+            onDeposit={handleDepositRequest} onWithdraw={handleWithdrawRequest}
+          />
+        ) : null
       ) : (
         <AdminPanel 
           settings={marketSettings} onUpdate={setMarketSettings} 

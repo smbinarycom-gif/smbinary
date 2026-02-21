@@ -181,9 +181,50 @@ const TradingChart: React.FC<TradingChartProps> = ({
 
   }, [currentPrice, countdown, currentTimeFrame]);
 
-  // Badge & Line Positioning Logic
-  useEffect(() => {
-    const updateOverlay = () => {
+    // Badge & Line Positioning Logic
+    useEffect(() => {
+        // Precompute candle times (in seconds) so we can snap trade times
+        // to the nearest existing candle. This ensures buy/sell points sit
+        // exactly over candles instead of drifting after them.
+        const candleTimesSec = data
+            .map(d => Math.floor(new Date(d.time).getTime() / 1000))
+            .sort((a, b) => a - b);
+
+        const snapToCandleTime = (ts: number): number | null => {
+            if (!candleTimesSec.length) return null;
+            // If before first candle, clamp to first
+            if (ts <= candleTimesSec[0]) return candleTimesSec[0];
+            // If after last candle, clamp to last
+            if (ts >= candleTimesSec[candleTimesSec.length - 1]) {
+                return candleTimesSec[candleTimesSec.length - 1];
+            }
+            // Binary search for rightmost candle time <= ts
+            let lo = 0;
+            let hi = candleTimesSec.length - 1;
+            let best = candleTimesSec[0];
+            while (lo <= hi) {
+                const mid = (lo + hi) >> 1;
+                const val = candleTimesSec[mid];
+                if (val === ts) {
+                    return val;
+                }
+                if (val < ts) {
+                    best = val;
+                    lo = mid + 1;
+                } else {
+                    hi = mid - 1;
+                }
+            }
+            return best;
+        };
+
+        const candleMap = new Map<number, CandleData>();
+        data.forEach(d => {
+            const t = Math.floor(new Date(d.time).getTime() / 1000);
+            candleMap.set(t, d);
+        });
+
+        const updateOverlay = () => {
         if (!chartRef.current || !candleSeriesRef.current || !lastCandleRef.current) return;
         
         const timeScale = chartRef.current.timeScale();
@@ -231,27 +272,43 @@ const TradingChart: React.FC<TradingChartProps> = ({
         let tempBadges: any[] = [];
         const finalLines: any[] = [];
 
+        const tfSeconds = parseTimeFrameToSeconds(currentTimeFrame);
+
         openTrades.forEach(trade => {
             const y = candleSeriesRef.current!.priceToCoordinate(trade.entryPrice);
             if (y === null) return; 
 
-            const entryTime = trade.startTime / 1000;
-            const expiryTime = trade.expiryTime / 1000;
+            const rawEntryTime = Math.floor(trade.startTime / 1000);
+            const rawExpiryTime = Math.floor(trade.expiryTime / 1000);
 
-            const x1 = getX(entryTime);
-            const x2 = getX(expiryTime);
+            // Align entry horizontally to centre of its timeframe candle
+            const bucketEntryTime = Math.floor(rawEntryTime / tfSeconds) * tfSeconds;
+            // Align close horizontally to its own timeframe bucket
+            const bucketExitTime = Math.floor(rawExpiryTime / tfSeconds) * tfSeconds;
+
+            const x1 = getX(bucketEntryTime);
+            const x2 = getX(bucketExitTime);
             
             if (x1 === null || x2 === null) return;
 
             const color = trade.type === 'CALL' ? '#00b85e' : '#ff3d3d';
 
-            // 1. MAIN TRADE LINE: Entry to Expiry
+            // Compute close-point Y: top of the closing candle if available
+            let closeY = y;
+            const exitCandle = candleMap.get(bucketExitTime);
+            if (exitCandle) {
+                const cy = candleSeriesRef.current!.priceToCoordinate(exitCandle.high);
+                if (cy !== null) closeY = cy;
+            }
+
+            // 1. MAIN TRADE LINE: horizontal at entry price
             finalLines.push({
                 id: trade.id,
                 x1: x1,
                 y1: y,
                 x2: x2, 
                 y2: y,
+                exitY: closeY,
                 color: color,
                 isMain: true
             });
@@ -268,7 +325,8 @@ const TradingChart: React.FC<TradingChartProps> = ({
                 id: trade.id,
                 realX: x1, // Actual entry X
                 y: y, // Actual Price Y
-                displayY: y, // Will be modified by stacking
+                // Original behavior: badge aligned with entry price line
+                displayY: y,
                 type: trade.type,
                 amount: trade.amount,
                 time: timeString,
@@ -287,7 +345,8 @@ const TradingChart: React.FC<TradingChartProps> = ({
         for (let i = 0; i < tempBadges.length; i++) {
             let badge = tempBadges[i];
             
-            // Start position: Slightly left of the entry point
+            // Original: start slightly left of entry so badge sits
+            // to the left of the dot/line.
             let proposedX = badge.realX - 45; 
             let proposedY = badge.displayY;
 
@@ -350,7 +409,7 @@ const TradingChart: React.FC<TradingChartProps> = ({
              chartRef.current.timeScale().unsubscribeVisibleLogicalRangeChange(updateOverlay);
         }
     };
-  }, [activeTrades, currentPrice, countdown]);
+    }, [activeTrades, currentPrice, countdown, data]);
 
   return (
     <div className="w-full h-full relative group bg-[#161a1e]">
@@ -364,12 +423,14 @@ const TradingChart: React.FC<TradingChartProps> = ({
                     <>
                         <line 
                             x1={line.x1} y1={line.y1} 
-                            x2={line.x2} y2={line.y2} 
+                            x2={line.x2} y2={line.y1} 
                             stroke={line.color} strokeWidth="2" strokeOpacity="1"
                         />
+                        {/* Entry point at entry price */}
                         <circle cx={line.x1} cy={line.y1} r="3.5" fill="#ffffff" stroke={line.color} strokeWidth="2" />
-                        <circle cx={line.x2} cy={line.y2} r="3.5" fill={line.color} stroke="#ffffff" strokeWidth="2" />
-                        <circle cx={line.x2} cy={line.y2} r="8" fill="none" stroke={line.color} strokeWidth="1" opacity="0.5">
+                        {/* Close point at top of closing candle (if exitY provided) */}
+                        <circle cx={line.x2} cy={line.exitY ?? line.y2} r="3.5" fill={line.color} stroke="#ffffff" strokeWidth="2" />
+                        <circle cx={line.x2} cy={line.exitY ?? line.y2} r="8" fill="none" stroke={line.color} strokeWidth="1" opacity="0.5">
                             <animate attributeName="r" from="4" to="12" dur="1.5s" repeatCount="indefinite" />
                             <animate attributeName="opacity" from="0.6" to="0" dur="1.5s" repeatCount="indefinite" />
                         </circle>
@@ -394,6 +455,8 @@ const TradingChart: React.FC<TradingChartProps> = ({
                 style={{ 
                     left: badge.renderX, 
                     top: badge.displayY, 
+                    // Original: anchor on the right so badge extends
+                    // leftwards from the entry line.
                     transform: 'translate(-100%, -50%)', 
                     zIndex: 30,
                     backgroundColor: badge.color,
