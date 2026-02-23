@@ -1,6 +1,6 @@
 
 import React, { useState, useMemo, useRef, useEffect } from 'react';
-import { Asset, CandleData, Trade, MarketSettings, PaymentRequest } from '../../shared/types.ts';
+import { Asset, CandleData, Trade, MarketSettings, PaymentRequest, AdminThemeSettings } from '../shared/types';
 import TradingChart from './components/TradingChart.tsx';
 import TradePanel from './components/TradePanel.tsx';
 import AssetList from './components/AssetList.tsx';
@@ -86,10 +86,10 @@ const NotificationsModal = ({
 }) => {
     if (!isOpen) return null;
     return (
-        <div className="fixed inset-0 z-[100] bg-[#161a1e] flex flex-col animate-in slide-in-from-right duration-200 lg:max-w-md lg:left-auto lg:border-l lg:border-[#2a3040] shadow-2xl">
-            <div className="h-14 bg-[#1e222d] border-b border-[#2a3040] flex items-center justify-between px-4 shrink-0 shadow-lg relative z-10">
+        <div className="absolute top-full right-0 mt-2 w-[320px] max-h-[420px] bg-[#1e222d] border border-[#2a3040] rounded-2xl shadow-2xl flex flex-col overflow-hidden z-[100] animate-in fade-in zoom-in-95 duration-200">
+            <div className="h-12 bg-[#1e222d] border-b border-[#2a3040] flex items-center justify-between px-4 shrink-0 shadow-lg relative z-10">
                 <h2 className="text-white font-bold text-base">Notifications</h2>
-                <button onClick={onClose} className="w-8 h-8 flex items-center justify-center text-[#848e9c] hover:text-white bg-[#2a3040] rounded-lg border border-[#333a4d] transition-colors"><i className="fa-solid fa-xmark"></i></button>
+                <button onClick={onClose} className="w-8 h-8 flex items-center justify-center text-[#848e9c] hover:text-white bg-[#2a3040] rounded-lg border border-[#333a4d] transition-colors"><i className="fa-solid fa-xmark text-sm"></i></button>
             </div>
             <div className="flex-1 overflow-y-auto p-3 space-y-2 custom-scrollbar bg-[#161a1e]">
                 {notifications.map((item) => (
@@ -105,9 +105,9 @@ const NotificationsModal = ({
                 ))}
                 <div className="pt-4 pb-2 text-center"><span className="text-[10px] text-[#7d8699] uppercase font-bold tracking-widest">End of notifications</span></div>
             </div>
-            <div className="p-3 border-t border-[#2a3040] bg-[#1e222d] flex space-x-3 pb-safe">
-                <button onClick={onClearAll} className="flex-1 bg-[#2a3040] text-[#848e9c] font-bold text-xs py-3 rounded-lg border border-[#333a4d] hover:text-white transition-colors active:scale-95">Clear All</button>
-                <button onClick={onClose} className="flex-1 bg-[#3b82f6] text-white font-bold text-xs py-3 rounded-lg hover:bg-[#2563eb] transition-colors shadow-lg shadow-blue-500/20 active:scale-95">Done</button>
+            <div className="p-3 border-t border-[#2a3040] bg-[#1e222d] flex space-x-3">
+                <button onClick={onClearAll} className="flex-1 bg-[#2a3040] text-[#848e9c] font-bold text-[11px] py-2.5 rounded-lg border border-[#333a4d] hover:text-white transition-colors active:scale-95">Clear All</button>
+                <button onClick={onClose} className="flex-1 bg-[#3b82f6] text-white font-bold text-[11px] py-2.5 rounded-lg hover:bg-[#2563eb] transition-colors shadow-lg shadow-blue-500/20 active:scale-95">Done</button>
             </div>
         </div>
     );
@@ -138,13 +138,49 @@ const EditDemoBalanceModal = ({ isOpen, onClose, currentBalance, onUpdate }: { i
 };
 
 // --- MOBILE ACCOUNT SWITCHER ---
-const AccountSwitchModal = ({ isOpen, onClose, accountType, onSwitch, liveBalance, demoBalance, onResetDemo, hideBalance, onToggleBalance, onEditDemo }: any) => {
+const AccountSwitchModal = ({ isOpen, onClose, accountType, onSwitch, liveBalance, demoBalance, onResetDemo, hideBalance, onToggleBalance, onEditDemo, currency, onChangeCurrency }: any) => {
+    const [isCurrencyOpen, setIsCurrencyOpen] = useState(false);
     if (!isOpen) return null;
+    const currencies = ['BTC', 'ETH', 'USDT'];
     return (
-        <div onClick={(e) => e.target === e.currentTarget && onClose()} className="fixed inset-0 z-[60] bg-black/60 backdrop-blur-sm flex flex-col justify-start pt-16 items-center px-4 animate-in fade-in duration-200">
+        <div onClick={(e) => { if (e.target === e.currentTarget) { onClose(); } }} className="fixed inset-0 z-[60] bg-black/60 backdrop-blur-sm flex flex-col justify-start pt-16 items-center px-4 animate-in fade-in duration-200">
              <div className="w-full max-w-sm bg-[#1e222d] rounded-lg shadow-2xl border border-[#2a3040] overflow-hidden animate-in zoom-in-95 duration-200 origin-top">
                  <div className="bg-[#2a3040] p-3 flex justify-between items-center relative overflow-hidden border-b border-[#333a4d]"><div className="flex flex-col relative z-10"><span className="text-[9px] text-[#7d8699] font-black uppercase tracking-widest mb-0.5">STANDARD:</span><span className="text-white font-bold text-sm">+0% profit</span></div><button onClick={(e) => { e.stopPropagation(); onToggleBalance(); }} className="w-8 h-8 rounded bg-[#1e222d] flex items-center justify-center text-[#848e9c] hover:text-white transition-colors"><i className={`fa-solid ${hideBalance ? 'fa-eye-slash' : 'fa-eye'} text-xs`}></i></button></div>
-                 <div className="p-4 bg-[#1e222d] border-b border-[#2a3040]"><h3 className="text-white font-bold text-sm truncate">todayearning2022@gmail.com</h3><p className="text-[#7d8699] text-[10px] font-bold mb-3 tracking-wide">ID: 48131283</p><div className="flex items-center justify-between"><div className="flex items-center space-x-1"><span className="text-[#7d8699] text-[10px] font-medium">Currency:</span><span className="text-white font-bold text-xs">USD</span></div><button className="bg-[#3b82f6] hover:bg-[#2563eb] text-white text-[9px] font-bold px-3 py-1 rounded transition-colors uppercase">CHANGE</button></div></div>
+                 <div className="p-4 bg-[#1e222d] border-b border-[#2a3040] relative">
+                    <h3 className="text-white font-bold text-sm truncate">todayearning2022@gmail.com</h3>
+                    <p className="text-[#7d8699] text-[10px] font-bold mb-3 tracking-wide">ID: 48131283</p>
+                    <div className="flex items-center justify-between">
+                        <div className="flex items-center space-x-1">
+                            <span className="text-[#7d8699] text-[10px] font-medium">Currency:</span>
+                            <span className="text-white font-bold text-xs">{currency}</span>
+                        </div>
+                        <button
+                            onClick={(e) => { e.stopPropagation(); setIsCurrencyOpen((prev) => !prev); }}
+                            className="bg-[#3b82f6] hover:bg-[#2563eb] text-white text-[9px] font-bold px-3 py-1 rounded transition-colors uppercase"
+                        >
+                            CHANGE
+                        </button>
+                    </div>
+                    {isCurrencyOpen && (
+                        <div className="absolute z-20 mt-2 right-4 w-32 bg-[#111827] border border-[#333a4d] rounded-lg shadow-xl overflow-hidden animate-in fade-in duration-150">
+                            {currencies.map((c) => (
+                                <button
+                                    key={c}
+                                    onClick={(e) => {
+                                        e.stopPropagation();
+                                        onChangeCurrency(c);
+                                        setIsCurrencyOpen(false);
+                                    }}
+                                    className={`w-full text-left px-3 py-2 text-[11px] font-medium ${
+                                        c === currency ? 'bg-[#1e293b] text-white' : 'text-[#e5e7eb] hover:bg-[#1e293b]'
+                                    }`}
+                                >
+                                    {c}
+                                </button>
+                            ))}
+                        </div>
+                    )}
+                 </div>
                  <div className="p-2 space-y-1 bg-[#161a1e]">
                     <div onClick={() => onSwitch('LIVE')} className={`p-3 rounded-lg cursor-pointer flex items-start space-x-3 transition-colors ${accountType === 'LIVE' ? 'bg-[#2a3040]' : 'hover:bg-[#2a3040]/50'}`}><div className={`w-4 h-4 rounded-full border-2 flex items-center justify-center shrink-0 mt-0.5 ${accountType === 'LIVE' ? 'border-[#00b85e]' : 'border-[#7d8699]'}`}>{accountType === 'LIVE' && <div className="w-2 h-2 rounded-full bg-[#00b85e]"></div>}</div><div className="flex-1"><div className="flex justify-between items-center"><span className="text-white font-bold text-sm">Live Account</span></div><p className="text-[#7d8699] text-xs font-mono mb-1">{hideBalance ? '****' : `$${liveBalance.toLocaleString(undefined, {minimumFractionDigits: 2})}`}</p><div className="flex items-center justify-between"><span className="text-[#7d8699] text-[9px]">The daily limit is not set</span><button onClick={(e) => { e.stopPropagation(); }} className="text-[#3b82f6] text-[9px] font-bold uppercase hover:text-[#60a5fa]">SET LIMIT</button></div></div></div>
                     <div onClick={() => onSwitch('DEMO')} className={`p-3 rounded-lg cursor-pointer flex items-start space-x-3 transition-colors ${accountType === 'DEMO' ? 'bg-[#2a3040]' : 'hover:bg-[#2a3040]/50'}`}><div className={`w-4 h-4 rounded-full border-2 flex items-center justify-center shrink-0 mt-0.5 ${accountType === 'DEMO' ? 'border-[#f6990c]' : 'border-[#7d8699]'}`}>{accountType === 'DEMO' && <div className="w-2 h-2 rounded-full bg-[#f6990c]"></div>}</div><div className="flex-1"><div className="flex justify-between items-center mb-1"><span className="text-white font-bold text-sm">Demo Account</span><button onClick={(e) => { e.stopPropagation(); onEditDemo(); }} className="text-[#7d8699] hover:text-white"><i className="fa-solid fa-pen text-xs"></i></button></div><div className="flex items-center space-x-2"><p className="text-white text-xs font-bold font-mono">{hideBalance ? '****' : `$${demoBalance.toLocaleString(undefined, {minimumFractionDigits: 2})}`}</p><button onClick={(e) => { e.stopPropagation(); onResetDemo(); }} className="text-[#7d8699] hover:text-white transition-colors"><i className="fa-solid fa-rotate-right text-xs"></i></button></div></div></div>
@@ -189,16 +225,19 @@ const LeaderboardContent = ({ data, isDesktop = false, onClose, onShowInfo, isEn
 }
 
 // Desktop Only Dropdown
-const AccountSelectorDropdown = React.forwardRef<HTMLDivElement, any>(({ accountType, setAccountType, liveBalance, demoBalance, onResetDemo, onClose, onEditDemo, className, hideBalance, onToggleBalance }, ref) => (
-  <div ref={ref} className={`bg-[#1e222d] border border-[#2a3040] rounded-xl shadow-2xl overflow-hidden animate-in fade-in zoom-in-95 duration-200 z-50 w-80 md:w-96 ${className}`}>
-      <div className="bg-[#2a3040] p-3 flex justify-between items-center border-b border-[#333a4d]"><div className="flex flex-col"><span className="text-[9px] text-[#7d8699] font-black uppercase tracking-widest mb-0.5">STANDARD:</span><span className="text-white font-bold text-xs">+0% profit</span></div><button onClick={(e) => { e.stopPropagation(); onToggleBalance(); }} className="w-8 h-8 rounded bg-[#1e222d] flex items-center justify-center text-[#848e9c] hover:text-white transition-colors"><i className={`fa-solid ${hideBalance ? 'fa-eye-slash' : 'fa-eye'} text-xs`}></i></button></div>
-      <div className="p-4 bg-[#1e222d] border-b border-[#2a3040]"><h3 className="text-white font-bold text-sm truncate">todayearning2022@gmail.com</h3><p className="text-[#7d8699] text-[10px] font-bold mb-3 tracking-wide">ID: 48131283</p><div className="flex items-center justify-between"><div className="flex items-center space-x-1"><span className="text-[#7d8699] text-[10px] font-medium">Currency:</span><span className="text-white font-bold text-xs">USD</span></div><button className="bg-[#3b82f6] hover:bg-[#2563eb] text-white text-[9px] font-bold px-3 py-1 rounded transition-colors uppercase">CHANGE</button></div></div>
+const AccountSelectorDropdown = React.forwardRef<HTMLDivElement, any>(({ accountType, setAccountType, liveBalance, demoBalance, onResetDemo, onClose, onEditDemo, className, hideBalance, onToggleBalance, currency, onChangeCurrency }, ref) => {
+    const [isCurrencyOpen, setIsCurrencyOpen] = useState(false);
+    const currencies = ['BTC', 'ETH', 'USDT'];
+    return (
+    <div ref={ref} className={`bg-[#1e222d] border border-[#2a3040] rounded-xl shadow-2xl overflow-hidden animate-in fade-in zoom-in-95 duration-200 z-50 w-80 md:w-96 ${className}`}>
+            <div className="bg-[#2a3040] p-3 flex justify-between items-center border-b border-[#333a4d]"><div className="flex flex-col"><span className="text-[9px] text-[#7d8699] font-black uppercase tracking-widest mb-0.5">STANDARD:</span><span className="text-white font-bold text-xs">+0% profit</span></div><button onClick={(e) => { e.stopPropagation(); onToggleBalance(); }} className="w-8 h-8 rounded bg-[#1e222d] flex items-center justify-center text-[#848e9c] hover:text-white transition-colors"><i className={`fa-solid ${hideBalance ? 'fa-eye-slash' : 'fa-eye'} text-xs`}></i></button></div>
+            <div className="p-4 bg-[#1e222d] border-b border-[#2a3040] relative"><h3 className="text-white font-bold text-sm truncate">todayearning2022@gmail.com</h3><p className="text-[#7d8699] text-[10px] font-bold mb-3 tracking-wide">ID: 48131283</p><div className="flex items-center justify-between"><div className="flex items-center space-x-1"><span className="text-[#7d8699] text-[10px] font-medium">Currency:</span><span className="text-white font-bold text-xs">{currency}</span></div><button onClick={(e) => { e.stopPropagation(); setIsCurrencyOpen(prev => !prev); }} className="bg-[#3b82f6] hover:bg-[#2563eb] text-white text-[9px] font-bold px-3 py-1 rounded transition-colors uppercase">CHANGE</button></div>{isCurrencyOpen && (<div className="absolute z-20 mt-2 right-4 w-32 bg-[#111827] border border-[#333a4d] rounded-lg shadow-xl overflow-hidden animate-in fade-in duration-150">{currencies.map((c) => (<button key={c} onClick={(e) => { e.stopPropagation(); onChangeCurrency(c); setIsCurrencyOpen(false); }} className={`w-full text-left px-3 py-2 text-[11px] font-medium ${c === currency ? 'bg-[#1e293b] text-white' : 'text-[#e5e7eb] hover:bg-[#1e293b]'}`}>{c}</button>))}</div>)}</div>
       <div className="p-2 space-y-1 bg-[#161a1e]">
           <div onClick={(e) => { e.stopPropagation(); setAccountType('LIVE'); onClose(); }} className={`p-3 rounded-lg cursor-pointer flex items-start space-x-3 transition-colors ${accountType === 'LIVE' ? 'bg-[#2a3040]' : 'hover:bg-[#2a3040]/50'}`}><div className={`w-4 h-4 rounded-full border-2 flex items-center justify-center shrink-0 mt-0.5 ${accountType === 'LIVE' ? 'border-[#00b85e]' : 'border-[#7d8699]'}`}>{accountType === 'LIVE' && <div className="w-2 h-2 rounded-full bg-[#00b85e]"></div>}</div><div className="flex-1"><span className="text-white font-bold text-sm">Live Account</span><div className="flex justify-between items-center mt-1"><span className="text-white font-bold text-xs font-mono">{hideBalance ? '****' : `$${liveBalance.toLocaleString(undefined, {minimumFractionDigits: 2})}`}</span></div><div className="flex items-center justify-between mt-1"><span className="text-[#7d8699] text-[9px]">The daily limit is not set</span><button onClick={(e) => { e.stopPropagation(); }} className="text-[#3b82f6] text-[9px] font-bold uppercase hover:text-[#60a5fa]">SET LIMIT</button></div></div></div>
           <div onClick={(e) => { e.stopPropagation(); setAccountType('DEMO'); onClose(); }} className={`p-3 rounded-lg cursor-pointer flex items-start space-x-3 transition-colors ${accountType === 'DEMO' ? 'bg-[#2a3040]' : 'hover:bg-[#2a3040]/50'}`}><div className={`w-4 h-4 rounded-full border-2 flex items-center justify-center shrink-0 mt-0.5 ${accountType === 'DEMO' ? 'border-[#f6990c]' : 'border-[#7d8699]'}`}>{accountType === 'DEMO' && <div className="w-2 h-2 rounded-full bg-[#f6990c]"></div>}</div><div className="flex-1"><div className="flex justify-between items-center"><span className="text-white font-bold text-sm">Demo Account</span><button onClick={(e) => { e.stopPropagation(); onEditDemo(); onClose(); }} className="text-[#7d8699] hover:text-white"><i className="fa-solid fa-pen text-xs"></i></button></div><div className="flex items-center space-x-2 mt-1"><span className="text-white font-bold text-xs font-mono">{hideBalance ? '****' : `$${demoBalance.toLocaleString(undefined, {minimumFractionDigits: 2})}`}</span><button onClick={(e) => { e.stopPropagation(); onResetDemo(); }} className="text-[#7d8699] hover:text-white transition-colors"><i className="fa-solid fa-rotate-right text-xs"></i></button></div></div></div>
       </div>
   </div>
-));
+)});
 
 const UserPanel: React.FC<UserPanelProps> = ({
   selectedAsset, setSelectedAsset, candleHistory, currentPrice, balance, accountType, setAccountType, demoBalance, liveBalance, onResetDemo, activeTrades, selectedTimeFrame, setSelectedTimeFrame, marketSettings, effectivePayout, handleTrade, onExit, visibleAssets, paymentRequests, onDeposit, onWithdraw
@@ -211,10 +250,11 @@ const UserPanel: React.FC<UserPanelProps> = ({
   const [mobileTab, setMobileTab] = useState('TRADE');
   const [isMobileAccountModalOpen, setIsMobileAccountModalOpen] = useState(false);
   const [isChangedModalOpen, setIsChangedModalOpen] = useState(false);
-  const [isNotificationsOpen, setIsNotificationsOpen] = useState(false);
-  const [hideBalance, setHideBalance] = useState(false); 
-  const [isEditDemoModalOpen, setIsEditDemoModalOpen] = useState(false);
-  const [isFullScreen, setIsFullScreen] = useState(false);
+    const [isNotificationsOpen, setIsNotificationsOpen] = useState(false);
+    const [hideBalance, setHideBalance] = useState(false); 
+    const [isEditDemoModalOpen, setIsEditDemoModalOpen] = useState(false);
+    const [isFullScreen, setIsFullScreen] = useState(false);
+    const [currency, setCurrency] = useState<'BTC' | 'ETH' | 'USDT'>('USDT');
   const [currentTime, setCurrentTime] = useState('');
   const desktopAccountSelectorRef = useRef<HTMLDivElement>(null);
   const relevantTrades = useMemo(() => activeTrades.filter(t => t.accountType === accountType), [activeTrades, accountType]);
@@ -236,6 +276,27 @@ const UserPanel: React.FC<UserPanelProps> = ({
     }, 1000);
     return () => clearInterval(timer);
   }, []);
+
+    // Full Screen Effect Listener (sync state if user presses ESC)
+    useEffect(() => {
+        const handleFullScreenChange = () => {
+            setIsFullScreen(!!document.fullscreenElement);
+        };
+        document.addEventListener('fullscreenchange', handleFullScreenChange);
+        return () => document.removeEventListener('fullscreenchange', handleFullScreenChange);
+    }, []);
+
+    const toggleFullScreen = () => {
+        if (!document.fullscreenElement) {
+            document.documentElement.requestFullscreen().catch(() => {
+                // Ignore errors (browser may block without user gesture)
+            });
+        } else {
+            if (document.exitFullscreen) {
+                document.exitFullscreen();
+            }
+        }
+    };
 
   // PUBLIC LEADERBOARD CALCULATION (Respects Admin Rules)
   const leaderboardData = useMemo(() => {
@@ -281,58 +342,245 @@ const UserPanel: React.FC<UserPanelProps> = ({
             return b.net - a.net;
         })
         .slice(0, 20);
-  }, [activeTrades, marketSettings.leaderboardConfig]);
+    }, [activeTrades, marketSettings.leaderboardConfig]);
 
-  if (marketSettings.maintenanceMode) return (
-      <div className="h-screen w-screen bg-[#131722] flex flex-col items-center justify-center p-8 text-center text-white"><h1 className="text-4xl font-bold mb-4">System Maintenance</h1><button onClick={onExit} className="mt-8 text-sm font-bold text-[#00b85e] hover:underline">Exit Platform</button></div>
-  );
+        // Fixed professional dark theme for user trading terminal –
+        // completely independent from Admin Appearance settings.
+        const userTheme: AdminThemeSettings = {
+                mode: 'DARK',
+                primaryColor: '#22c55e',      // accent green
+                accentColor:  '#0ea5e9',      // secondary cyan/blue
+                backgroundColor: '#020617',   // shell background behind everything
+                sidebarBackground: '#111827',  // LEFT sidebar = #111827
+                headerBackground:  '#111827',  // TOP bar = #111827
+                surfaceBackground: '#111827',  // panels / cards
+                textColor: '#E5E7EB',
+        };
 
-  return (
-    <div className="h-screen w-screen bg-[#131722] text-[#ccddbb] overflow-hidden font-inter">
+        const isLightTheme = false;
+        const shellBg = userTheme.backgroundColor || '#020617';
+        const surfaceBg = userTheme.surfaceBackground || '#111827';
+        const headerBg = userTheme.headerBackground || '#111827';
+        const sidebarBg = userTheme.sidebarBackground || '#111827';
+        const borderColor = '#1f2933';
+        const subtleBg = '#020617';
+        const textPrimary = userTheme.textColor || '#ffffff';
+
+    if (marketSettings.maintenanceMode)
+        return (
+            <div
+                className="h-screen w-screen flex flex-col items-center justify-center p-8 text-center"
+                style={{ backgroundColor: shellBg, color: textPrimary }}
+            >
+                <h1 className="text-4xl font-bold mb-4">System Maintenance</h1>
+                <button
+                    onClick={onExit}
+                    className="mt-8 text-sm font-bold hover:underline"
+                    style={{ color: isLightTheme ? '#16a34a' : '#00b85e' }}
+                >
+                    Exit Platform
+                </button>
+            </div>
+        );
+
+    return (
+        <div
+            className="h-screen w-screen overflow-hidden font-inter"
+            style={{ backgroundColor: shellBg, color: textPrimary }}
+        >
       {showRatingInfo && <RatingInfoModal onClose={() => setShowRatingInfo(false)} />}
-      <EditDemoBalanceModal isOpen={isEditDemoModalOpen} onClose={() => setIsEditDemoModalOpen(false)} currentBalance={demoBalance} onUpdate={onResetDemo} />
-      <AccountSwitchModal isOpen={isMobileAccountModalOpen} onClose={() => setIsMobileAccountModalOpen(false)} accountType={accountType} onSwitch={handleAccountSwitch} liveBalance={liveBalance} demoBalance={demoBalance} onResetDemo={onResetDemo} hideBalance={hideBalance} onToggleBalance={() => setHideBalance(!hideBalance)} onEditDemo={() => { setIsMobileAccountModalOpen(false); setIsEditDemoModalOpen(true); }} />
-      <NotificationsModal isOpen={isNotificationsOpen} onClose={() => setIsNotificationsOpen(false)} notifications={notifications} onNotificationClick={(id) => setNotifications(prev => prev.map(n => n.id === id ? {...n, unread: false, expanded: !n.expanded} : n))} onClearAll={() => setNotifications(prev => prev.map(n => ({...n, unread: false})))} />
+            <EditDemoBalanceModal isOpen={isEditDemoModalOpen} onClose={() => setIsEditDemoModalOpen(false)} currentBalance={demoBalance} onUpdate={onResetDemo} />
+            <AccountSwitchModal isOpen={isMobileAccountModalOpen} onClose={() => setIsMobileAccountModalOpen(false)} accountType={accountType} onSwitch={handleAccountSwitch} liveBalance={liveBalance} demoBalance={demoBalance} onResetDemo={onResetDemo} hideBalance={hideBalance} onToggleBalance={() => setHideBalance(!hideBalance)} onEditDemo={() => { setIsMobileAccountModalOpen(false); setIsEditDemoModalOpen(true); }} currency={currency} onChangeCurrency={setCurrency} />
       <AccountChangedModal isOpen={isChangedModalOpen} onClose={() => setIsChangedModalOpen(false)} type={accountType} balance={balance} />
       
       {/* Desktop Main */}
-      <div className="hidden md:flex h-full w-full">
-        <aside className="w-[60px] flex flex-col items-center py-4 bg-[#1e222d] border-r border-[#2a3040] z-20 shrink-0">
-          <div className="mb-6 w-8 h-8 bg-[#00b85e] rounded flex items-center justify-center font-bold text-white text-lg">Q</div>
+            <div className="hidden md:flex h-full w-full">
+                <aside
+                    className="w-[60px] flex flex-col items-center py-4 border-r z-20 shrink-0"
+                    style={{ backgroundColor: sidebarBg, borderColor }}
+                >
+                    <div className="mb-6 w-8 h-8 rounded flex items-center justify-center font-bold text-white text-lg" style={{ background:
+                        'radial-gradient(circle at 0% 0%, #22c55e 0, rgba(34,197,94,0.1) 55%, transparent 70%), radial-gradient(circle at 100% 100%, #0ea5e9 0, rgba(14,165,233,0.05) 55%, transparent 70%)',
+                    }}>Q</div>
           <div className="flex flex-col space-y-6 w-full">
-              <button onClick={() => { setMobileTab('TRADE'); setIsAssetListOpen(false); setIsLeaderboardOpen(false); }} className={`w-full h-10 flex items-center justify-center ${mobileTab === 'TRADE' && !isAssetListOpen && !isLeaderboardOpen ? 'text-[#00b85e]' : 'text-[#7d8699] hover:text-white'}`}><i className="fa-solid fa-arrow-trend-up text-lg"></i></button>
-              <button onClick={() => { setIsLeaderboardOpen(!isLeaderboardOpen); setIsAssetListOpen(false); setMobileTab('TRADE'); }} className={`w-full h-10 flex items-center justify-center ${isLeaderboardOpen ? 'text-[#00b85e]' : 'text-[#7d8699] hover:text-white'}`}><i className="fa-solid fa-trophy text-lg"></i></button>
-              <button onClick={() => { setIsAssetListOpen(!isAssetListOpen); setIsLeaderboardOpen(false); setMobileTab('TRADE'); }} className={`w-full h-10 flex items-center justify-center ${isAssetListOpen ? 'text-[#00b85e]' : 'text-[#7d8699] hover:text-white'}`}><i className="fa-solid fa-chart-simple text-lg"></i></button>
-              <button onClick={() => { setMobileTab('WALLETS'); setIsAssetListOpen(false); setIsLeaderboardOpen(false); }} className={`w-full h-10 flex items-center justify-center ${mobileTab === 'WALLETS' ? 'text-[#00b85e]' : 'text-[#7d8699] hover:text-white'}`}><i className="fa-solid fa-wallet text-lg"></i></button>
+              <button onClick={() => { setMobileTab('TRADE'); setIsAssetListOpen(false); setIsLeaderboardOpen(false); }} className={`w-full h-10 flex items-center justify-center ${mobileTab === 'TRADE' && !isAssetListOpen && !isLeaderboardOpen ? 'text-[#22c55e]' : 'text-[#64748b] hover:text-slate-100'}`}><i className="fa-solid fa-arrow-trend-up text-lg"></i></button>
+              <button onClick={() => { setIsLeaderboardOpen(!isLeaderboardOpen); setIsAssetListOpen(false); setMobileTab('TRADE'); }} className={`w-full h-10 flex items-center justify-center ${isLeaderboardOpen ? 'text-[#22c55e]' : 'text-[#64748b] hover:text-slate-100'}`}><i className="fa-solid fa-trophy text-lg"></i></button>
+              <button onClick={() => { setIsAssetListOpen(!isAssetListOpen); setIsLeaderboardOpen(false); setMobileTab('TRADE'); }} className={`w-full h-10 flex items-center justify-center ${isAssetListOpen ? 'text-[#22c55e]' : 'text-[#64748b] hover:text-slate-100'}`}><i className="fa-solid fa-chart-simple text-lg"></i></button>
+              <button onClick={() => { setMobileTab('WALLETS'); setIsAssetListOpen(false); setIsLeaderboardOpen(false); }} className={`w-full h-10 flex items-center justify-center ${mobileTab === 'WALLETS' ? 'text-[#22c55e]' : 'text-[#64748b] hover:text-slate-100'}`}><i className="fa-solid fa-wallet text-lg"></i></button>
           </div>
           <button onClick={onExit} className="mt-auto text-[#7d8699] hover:text-[#ff3d3d]"><i className="fa-solid fa-power-off"></i></button>
         </aside>
-        <div className="flex-1 flex flex-col min-w-0 relative">
-          <header className="h-16 bg-[#1e222d] flex items-center justify-between px-4 shrink-0 border-b border-[#2a3040]">
-              <button onClick={() => setIsAssetListOpen(!isAssetListOpen)} className="flex items-center space-x-3 bg-[#2a3040] hover:bg-[#333a4d] px-3 py-2 rounded border border-[#333a4d]"><AssetIcon asset={selectedAsset} /><div className="flex flex-col items-start leading-tight"><span className="text-white text-sm font-bold">{selectedAsset.symbol} {isCurrentAssetOTC && '(OTC)'}</span><span className="text-[#00b85e] text-xs font-bold">{effectivePayout}%</span></div><i className="fa-solid fa-chevron-down text-[10px] text-[#7d8699] ml-2"></i></button>
+                <div className="flex-1 flex flex-col min-w-0 relative">
+                    <header
+                        className="h-16 flex items-center justify-between px-4 shrink-0 border-b"
+                        style={{ backgroundColor: headerBg, borderColor }}
+                    >
+              <button onClick={() => setIsAssetListOpen(!isAssetListOpen)} className="flex items-center space-x-3 px-3 py-2 rounded border" style={{ backgroundColor: '#2a3040', borderColor: '#1f2937' }}><AssetIcon asset={selectedAsset} /><div className="flex flex-col items-start leading-tight"><span className="text-slate-50 text-sm font-bold">{selectedAsset.symbol} {isCurrentAssetOTC && '(OTC)'}</span><span className="text-[#22c55e] text-xs font-bold">{effectivePayout}%</span></div><i className="fa-solid fa-chevron-down text-[10px] text-[#64748b] ml-2"></i></button>
                    <div className="flex items-center space-x-3">
-                  <button onClick={() => setIsNotificationsOpen(true)} className="w-11 h-11 rounded bg-[#2a3040] flex items-center justify-center text-white relative border border-[#333a4d]"><i className="fa-regular fa-bell text-lg"></i>{notifications.filter(n => n.unread).length > 0 && <div className="absolute top-2 right-2 w-4 h-4 bg-[#ff3d3d] rounded-full flex items-center justify-center border border-[#2a3040]"><span className="text-[10px] font-bold text-white">{notifications.filter(n => n.unread).length}</span></div>}</button>
-                  <div className="relative z-50"><button onClick={() => setIsAccountSelectorOpen(!isAccountSelectorOpen)} className="flex items-center space-x-3 bg-[#2a3040] hover:bg-[#333a4d] px-4 py-2 rounded border border-[#333a4d] h-11"><div className="text-xl">{accountType === 'DEMO' ? <i className="fa-solid fa-graduation-cap text-[#fcd535]"></i> : <i className="fa-solid fa-paper-plane text-[#00b85e]"></i>}</div><div className="flex flex-col items-start"><span className={`text-[9px] font-black uppercase tracking-wide ${accountType === 'LIVE' ? 'text-[#00b85e]' : 'text-[#fcd535]'}`}>{accountType} ACCOUNT</span><span className="text-white font-bold text-sm tracking-wide font-mono">{hideBalance ? '****' : `$${balance.toLocaleString(undefined, {minimumFractionDigits: 2})}`}</span></div><i className="fa-solid fa-chevron-down text-[10px] text-[#7d8699] ml-1"></i></button>{isAccountSelectorOpen && <AccountSelectorDropdown accountType={accountType} setAccountType={handleAccountSwitch} liveBalance={liveBalance} demoBalance={demoBalance} onResetDemo={onResetDemo} onClose={() => setIsAccountSelectorOpen(false)} onEditDemo={() => { setIsEditDemoModalOpen(true); setIsAccountSelectorOpen(false); }} className="absolute top-full right-0 mt-2" hideBalance={hideBalance} onToggleBalance={() => setHideBalance(!hideBalance)} />}</div>
-                  <button onClick={() => setMobileTab('WALLETS')} className="bg-[#00b85e] btn-deposit text-white text-sm font-bold px-6 py-2.5 rounded h-11 shadow-lg">Deposit</button>
+                  {/* Fullscreen (desktop/tablet only) */}
+                                    <button
+                                        onClick={toggleFullScreen}
+                                        className="w-11 h-11 rounded flex items-center justify-center text-slate-200 border"
+                                        style={{ backgroundColor: '#2a3040', borderColor: '#1f2937' }}
+                                        title={isFullScreen ? 'Exit full screen' : 'Full screen'}
+                                    >
+                                        <i className={`fa-solid ${isFullScreen ? 'fa-compress' : 'fa-expand'} text-base`}></i>
+                                    </button>
+                  <div className="relative z-50">
+                      <button
+                          onClick={() => setIsNotificationsOpen(prev => !prev)}
+                          className="w-11 h-11 rounded flex items-center justify-center text-slate-200 relative border"
+                          style={{ backgroundColor: '#2a3040', borderColor: '#1f2937' }}
+                      >
+                          <i className="fa-regular fa-bell text-lg"></i>
+                          {notifications.filter(n => n.unread).length > 0 && (
+                              <div className="absolute top-2 right-2 w-4 h-4 bg-[#f97316] rounded-full flex items-center justify-center border border-[#020617]">
+                                  <span className="text-[10px] font-bold text-white">{notifications.filter(n => n.unread).length}</span>
+                              </div>
+                          )}
+                      </button>
+                      <NotificationsModal
+                          isOpen={isNotificationsOpen}
+                          onClose={() => setIsNotificationsOpen(false)}
+                          notifications={notifications}
+                          onNotificationClick={(id) =>
+                              setNotifications(prev => prev.map(n =>
+                                  n.id === id ? { ...n, unread: false, expanded: !n.expanded } : n
+                              ))
+                          }
+                          onClearAll={() =>
+                              setNotifications(prev => prev.map(n => ({ ...n, unread: false })))}
+                      />
+                  </div>
+                  <div className="relative z-50"><button onClick={() => setIsAccountSelectorOpen(!isAccountSelectorOpen)} className="flex items-center space-x-3 px-4 py-2 rounded border h-11" style={{ backgroundColor: '#2a3040', borderColor: '#1f2937' }}><div className="text-xl">{accountType === 'DEMO' ? <i className="fa-solid fa-graduation-cap text-[#facc15]"></i> : <i className="fa-solid fa-paper-plane text-[#22c55e]"></i>}</div><div className="flex flex-col items-start"><span className={`text-[9px] font-black uppercase tracking-wide ${accountType === 'LIVE' ? 'text-[#22c55e]' : 'text-[#facc15]'}`}>{accountType} ACCOUNT</span><span className="text-slate-50 font-bold text-sm tracking-wide font-mono">{hideBalance ? '****' : `$${balance.toLocaleString(undefined, {minimumFractionDigits: 2})}`}</span></div><i className="fa-solid fa-chevron-down text-[10px] text-[#64748b] ml-1"></i></button>{isAccountSelectorOpen && <AccountSelectorDropdown accountType={accountType} setAccountType={handleAccountSwitch} liveBalance={liveBalance} demoBalance={demoBalance} onResetDemo={onResetDemo} onClose={() => setIsAccountSelectorOpen(false)} onEditDemo={() => { setIsEditDemoModalOpen(true); setIsAccountSelectorOpen(false); }} className="absolute top-full right-0 mt-2" hideBalance={hideBalance} onToggleBalance={() => setHideBalance(!hideBalance)} currency={currency} onChangeCurrency={setCurrency} />}</div>
+                                    <button
+                                        onClick={() => setMobileTab('WALLETS')}
+                                        className="btn-deposit text-sm font-bold px-7 py-2.5 rounded h-11 shadow-lg"
+                                        style={{
+                                            background: 'linear-gradient(#21c55e)',
+                                            color: '#ffffff',
+                                        }}
+                                    >
+                                        Deposit
+                                    </button>
+                                     <button
+                                        onClick={() => setMobileTab('WALLETS')}
+                                        className="btn-deposit text-sm font-bold px-7 py-2.5 rounded h-11 shadow-lg"
+                                        style={{
+                                            background: 'linear-gradient(#2a3040)',
+                                            color: '#ffffff',
+                                        }}
+                                    >
+                                        Withdrawal
+                                    </button>
                   </div>
           </header>
           <div className="flex-1 flex overflow-hidden relative">
-              {isAssetListOpen && <div className="absolute top-0 left-0 bottom-0 z-30 w-80 shadow-2xl"><AssetList assets={visibleAssets} selectedId={selectedAsset.id} onSelect={(a) => { setSelectedAsset(a); setIsAssetListOpen(false); }} onClose={() => setIsAssetListOpen(false)} isGlobalOTC={marketSettings.marketMode === 'OTC'} /></div>}
-              {isLeaderboardOpen && <div className="absolute top-0 left-0 bottom-0 z-30 w-80 shadow-2xl animate-in slide-in-from-left-4 duration-200"><LeaderboardContent data={leaderboardData} isDesktop={true} onClose={() => setIsLeaderboardOpen(false)} onShowInfo={() => setShowRatingInfo(true)} isEnabled={marketSettings.isLeaderboardEnabled} rankingBasis={marketSettings.leaderboardConfig.rankingBasis} /></div>}
-              <main className="flex-1 bg-[#131722] relative flex flex-col">
-                  {mobileTab === 'WALLETS' ? <WalletPanel balance={liveBalance} adminPayId={marketSettings.adminBinancePayId} paymentHistory={paymentRequests} onDeposit={onDeposit} onWithdraw={onWithdraw} onClose={() => setMobileTab('TRADE')} /> : <>
-                      {marketSettings.aiAnalyst.isEnabled && <div className="absolute bottom-16 left-4 z-10 w-64"><AiAnalyst assetSymbol={selectedAsset.symbol} currentPrice={currentPrice} priceHistory={candleHistory} settings={marketSettings.aiAnalyst} /></div>}
-                      <TradingChart data={candleHistory} currentPrice={currentPrice} symbol={selectedAsset.symbol} activeTrades={relevantTrades} currentTimeFrame={selectedTimeFrame} activeTimeFrames={marketSettings.activeTimeFrames} onTimeFrameChange={setSelectedTimeFrame} onToggleTrades={() => setIsTradesListOpen(true)} />
-                  </>}
+                            {isAssetListOpen && (
+                                <div className="absolute top-0 left-0 bottom-0 z-30 w-80 shadow-2xl">
+                                    <AssetList
+                                        assets={visibleAssets}
+                                        selectedId={selectedAsset.id}
+                                        onSelect={(a) => {
+                                            setSelectedAsset(a);
+                                            setIsAssetListOpen(false);
+                                        }}
+                                        onClose={() => setIsAssetListOpen(false)}
+                                        isGlobalOTC={marketSettings.marketMode === 'OTC'}
+                                        theme={userTheme}
+                                    />
+                                </div>
+                            )}
+                            {isLeaderboardOpen && (
+                                <div className="absolute top-0 left-0 bottom-0 z-30 w-80 shadow-2xl animate-in slide-in-from-left-4 duration-200">
+                                    <LeaderboardContent
+                                        data={leaderboardData}
+                                        isDesktop={true}
+                                        onClose={() => setIsLeaderboardOpen(false)}
+                                        onShowInfo={() => setShowRatingInfo(true)}
+                                        isEnabled={marketSettings.isLeaderboardEnabled}
+                                        rankingBasis={marketSettings.leaderboardConfig.rankingBasis}
+                                    />
+                                </div>
+                            )}
+                            <main
+                                className="flex-1 relative flex flex-col"
+                                style={{ backgroundColor: shellBg }}
+                            >
+                                    {mobileTab === 'WALLETS' ? (
+                                        <WalletPanel
+                                            balance={liveBalance}
+                                            adminPayId={marketSettings.adminBinancePayId}
+                                            paymentHistory={paymentRequests}
+                                            onDeposit={onDeposit}
+                                            onWithdraw={onWithdraw}
+                                            onClose={() => setMobileTab('TRADE')}
+                                            theme={userTheme}
+                                        />
+                                    ) : (
+                                        <>
+                                            {marketSettings.aiAnalyst.isEnabled && (
+                                                <div className="absolute bottom-16 left-4 z-10 w-64">
+                                                    <AiAnalyst
+                                                        assetSymbol={selectedAsset.symbol}
+                                                        currentPrice={currentPrice}
+                                                        priceHistory={candleHistory}
+                                                        settings={marketSettings.aiAnalyst}
+                                                    />
+                                                </div>
+                                            )}
+                                            <TradingChart
+                                                data={candleHistory}
+                                                currentPrice={currentPrice}
+                                                symbol={selectedAsset.symbol}
+                                                activeTrades={relevantTrades}
+                                                currentTimeFrame={selectedTimeFrame}
+                                                activeTimeFrames={marketSettings.activeTimeFrames}
+                                                onTimeFrameChange={setSelectedTimeFrame}
+                                                onToggleTrades={() => setIsTradesListOpen(true)}
+                                                theme={userTheme}
+                                            />
+                                        </>
+                                    )}
               </main>
-              {mobileTab === 'TRADE' && <aside className="w-[280px] bg-[#1e222d] border-l border-[#2a3040] flex flex-col shrink-0 z-20 h-full"><div className="shrink-0 p-4 border-b border-[#2a3040] overflow-y-auto"><TradePanel asset={{...selectedAsset, payout: effectivePayout}} balance={balance} onTrade={handleTrade} activeDurations={marketSettings.activeTradeDurations} shortcuts={marketSettings.investmentShortcuts} minInvestment={marketSettings.minInvestment} maxInvestment={marketSettings.maxInvestment} selectedTimeFrame={selectedTimeFrame} isOTC={isCurrentAssetOTC} /></div><div className="flex-1 flex flex-col min-h-0 bg-[#181c25] overflow-hidden"><TradeHistory trades={relevantTrades} payout={effectivePayout} /></div></aside>}
+                            {mobileTab === 'TRADE' && (
+                                <aside
+                                    className="w-[280px] flex flex-col shrink-0 z-20 h-full border-l"
+                                    style={{ backgroundColor: surfaceBg, borderColor }}
+                                >
+                                    <div className="shrink-0 p-4 border-b overflow-y-auto" style={{ borderColor }}>
+                                        <TradePanel
+                                            asset={{ ...selectedAsset, payout: effectivePayout }}
+                                            balance={balance}
+                                            onTrade={handleTrade}
+                                            activeDurations={marketSettings.activeTradeDurations}
+                                            shortcuts={marketSettings.investmentShortcuts}
+                                            minInvestment={marketSettings.minInvestment}
+                                            maxInvestment={marketSettings.maxInvestment}
+                                            selectedTimeFrame={selectedTimeFrame}
+                                            isOTC={isCurrentAssetOTC}
+                                            theme={userTheme}
+                                        />
+                                    </div>
+                                    <div
+                                        className="flex-1 flex flex-col min-h-0 overflow-hidden"
+                                        style={{ backgroundColor: subtleBg }}
+                                    >
+                                        <TradeHistory trades={relevantTrades} payout={effectivePayout} theme={userTheme} />
+                                    </div>
+                                </aside>
+                            )}
           </div>
         </div>
       </div>
 
       {/* Mobile Main */}
-            <div className="flex md:hidden flex-col h-full w-full bg-[#161a1e] relative">
-                {mobileTab !== 'TOP' && mobileTab !== 'WALLETS' && <header className="mobile-topbar h-[52px] bg-[#1e222d] border-b border-[#2a3040] flex items-center justify-between px-3 shrink-0 z-20 shadow-md">
+                        <div className="flex md:hidden flex-col h-full w-full relative" style={{ backgroundColor: shellBg }}>
+                                {mobileTab !== 'TOP' && mobileTab !== 'WALLETS' && (
+                                    <header
+                                        className="mobile-topbar h-[52px] flex items-center justify-between px-3 shrink-0 z-20 shadow-md border-b"
+                                        style={{ backgroundColor: headerBg, borderColor }}
+                                    >
                     <div className="flex items-center space-x-2 min-w-0">
                     <button onClick={() => setIsMobileAccountModalOpen(true)} className="flex items-center bg-[#2a3040] rounded-lg border border-[#333a4d] px-2 py-1 h-9 truncate">
                         <div className="mr-2">{accountType === 'DEMO' ? <i className="fa-solid fa-graduation-cap text-[#fcd535]"></i> : <i className="fa-solid fa-paper-plane text-[#00b85e]"></i>}</div>
@@ -342,35 +590,219 @@ const UserPanel: React.FC<UserPanelProps> = ({
                         </div>
                         <i className="fa-solid fa-chevron-down text-[9px] text-[#848e9c]"></i>
                     </button>
-                    <button onClick={() => setIsNotificationsOpen(true)} className="w-10 h-10 bg-[#2a3040] rounded-lg border border-[#333a4d] flex items-center justify-center relative h-9 ml-2"><i className="fa-regular fa-bell text-white text-lg"></i>{notifications.filter(n => n.unread).length > 0 && <div className="absolute top-1 right-1 w-4 h-4 bg-[#ff3d3d] rounded-full flex items-center justify-center border border-[#2a3040]"><span className="text-[10px] font-bold text-white">{notifications.filter(n => n.unread).length}</span></div>}</button>
+                    <div className="relative z-50 ml-2">
+                        <button
+                            onClick={() => setIsNotificationsOpen(prev => !prev)}
+                            className="w-10 h-10 bg-[#2a3040] rounded-lg border border-[#333a4d] flex items-center justify-center relative"
+                        >
+                            <i className="fa-regular fa-bell text-white text-lg"></i>
+                            {notifications.filter(n => n.unread).length > 0 && (
+                                <div className="absolute top-1 right-1 w-4 h-4 bg-[#ff3d3d] rounded-full flex items-center justify-center border border-[#2a3040]">
+                                    <span className="text-[10px] font-bold text-white">{notifications.filter(n => n.unread).length}</span>
+                                </div>
+                            )}
+                        </button>
+                        <NotificationsModal
+                            isOpen={isNotificationsOpen}
+                            onClose={() => setIsNotificationsOpen(false)}
+                            notifications={notifications}
+                            onNotificationClick={(id) =>
+                                setNotifications(prev => prev.map(n =>
+                                    n.id === id ? { ...n, unread: false, expanded: !n.expanded } : n
+                                ))
+                            }
+                            onClearAll={() =>
+                                setNotifications(prev => prev.map(n => ({ ...n, unread: false })))}
+                        />
+                    </div>
                     </div>
                     <button onClick={() => setMobileTab('WALLETS')} className="ml-2 px-3 py-1.5 h-9 rounded-lg bg-[#00b85e] text-white text-[11px] font-bold uppercase tracking-wide flex items-center shadow-md active:scale-95">
                         <span>Deposit</span>
                     </button>
-                </header>}
-        {isAssetListOpen && <div className="fixed inset-0 z-50 bg-[#161a1e]"><AssetList assets={visibleAssets} selectedId={selectedAsset.id} onSelect={(a) => { setSelectedAsset(a); setIsAssetListOpen(false); setMobileTab('TRADE'); }} onClose={() => { setIsAssetListOpen(false); setMobileTab('TRADE'); }} isGlobalOTC={marketSettings.marketMode === 'OTC'} /></div>}
+                                </header>
+                              )}
+                {isAssetListOpen && (
+                    <div className="fixed inset-0 z-50" style={{ backgroundColor: shellBg }}>
+                        <AssetList
+                            assets={visibleAssets}
+                            selectedId={selectedAsset.id}
+                            onSelect={(a) => {
+                                setSelectedAsset(a);
+                                setIsAssetListOpen(false);
+                                setMobileTab('TRADE');
+                            }}
+                            onClose={() => {
+                                setIsAssetListOpen(false);
+                                setMobileTab('TRADE');
+                            }}
+                            isGlobalOTC={marketSettings.marketMode === 'OTC'}
+                            theme={userTheme}
+                        />
+                    </div>
+                )}
                 <div className="flex-1 relative flex flex-col min-h-0">
-                    {mobileTab === 'WALLETS' ? <WalletPanel balance={liveBalance} adminPayId={marketSettings.adminBinancePayId} paymentHistory={paymentRequests} onDeposit={onDeposit} onWithdraw={onWithdraw} onClose={() => setMobileTab('TRADE')} /> : mobileTab === 'TOP' ? <LeaderboardContent data={leaderboardData} isDesktop={false} onClose={() => setMobileTab('TRADE')} onShowInfo={() => setShowRatingInfo(true)} isEnabled={marketSettings.isLeaderboardEnabled} rankingBasis={marketSettings.leaderboardConfig.rankingBasis} /> : <>
-                        <div className="flex-1 w-full bg-[#161a1e] relative chart-bleed"><TradingChart data={candleHistory} currentPrice={currentPrice} symbol={selectedAsset.symbol} activeTrades={relevantTrades} currentTimeFrame={selectedTimeFrame} activeTimeFrames={marketSettings.activeTimeFrames} onTimeFrameChange={setSelectedTimeFrame} onToggleTrades={() => setIsTradesListOpen(true)} /></div>
-                        <div className="px-3 py-2 bg-[#1e2329] border-t border-[#2a3040] flex items-center justify-between z-20 compact-asset-row"><button onClick={() => setIsAssetListOpen(true)} className="flex items-center space-x-2 min-w-0"><AssetIcon asset={selectedAsset} /><span className="text-white text-sm font-bold truncate">{selectedAsset.symbol.split('/')[0]} {isCurrentAssetOTC && '(OTC)'}</span><span className="text-[#0ecb81] text-sm font-bold">{effectivePayout}%</span><i className="fa-solid fa-chevron-down text-[#848e9c] text-[10px] ml-1"></i></button><div className="flex items-center space-x-2"><div className="w-1.5 h-1.5 rounded-full bg-[#0ecb81] animate-pulse"></div><span className="text-xs font-bold text-[#848e9c] font-mono">{currentTime}</span></div></div>
-                        <div className="bg-[#1e2329] pb-safe p-2 mobile-trade-panel"><TradePanel asset={{...selectedAsset, payout: effectivePayout}} balance={balance} onTrade={handleTrade} activeDurations={marketSettings.activeTradeDurations} shortcuts={marketSettings.investmentShortcuts} minInvestment={marketSettings.minInvestment} maxInvestment={marketSettings.maxInvestment} isMobile={true} selectedTimeFrame={selectedTimeFrame} isOTC={isCurrentAssetOTC} /></div>
-                    </>}
+                                        {mobileTab === 'WALLETS' ? (
+                                            <WalletPanel
+                                                balance={liveBalance}
+                                                adminPayId={marketSettings.adminBinancePayId}
+                                                paymentHistory={paymentRequests}
+                                                onDeposit={onDeposit}
+                                                onWithdraw={onWithdraw}
+                                                onClose={() => setMobileTab('TRADE')}
+                                                theme={userTheme}
+                                            />
+                                        ) : mobileTab === 'TOP' ? (
+                                            <LeaderboardContent
+                                                data={leaderboardData}
+                                                isDesktop={false}
+                                                onClose={() => setMobileTab('TRADE')}
+                                                onShowInfo={() => setShowRatingInfo(true)}
+                                                isEnabled={marketSettings.isLeaderboardEnabled}
+                                                rankingBasis={marketSettings.leaderboardConfig.rankingBasis}
+                                            />
+                                        ) : (
+                                            <>
+                                                <div className="flex-1 w-full relative chart-bleed" style={{ backgroundColor: shellBg }}>
+                                                    <TradingChart
+                                                        data={candleHistory}
+                                                        currentPrice={currentPrice}
+                                                        symbol={selectedAsset.symbol}
+                                                        activeTrades={relevantTrades}
+                                                        currentTimeFrame={selectedTimeFrame}
+                                                        activeTimeFrames={marketSettings.activeTimeFrames}
+                                                        onTimeFrameChange={setSelectedTimeFrame}
+                                                        onToggleTrades={() => setIsTradesListOpen(true)}
+                                                        theme={userTheme}
+                                                    />
+                                                </div>
+                                                <div
+                                                    className="px-3 py-2 flex items-center justify-between z-20 compact-asset-row border-t"
+                                                    style={{ backgroundColor: surfaceBg, borderColor }}
+                                                >
+                                                    <button
+                                                        onClick={() => setIsAssetListOpen(true)}
+                                                        className="flex items-center space-x-2 min-w-0"
+                                                    >
+                                                        <AssetIcon asset={selectedAsset} />
+                                                        <span className="text-sm font-bold truncate" style={{ color: textPrimary }}>
+                                                            {selectedAsset.symbol.split('/')[0]} {isCurrentAssetOTC && '(OTC)'}
+                                                        </span>
+                                                        <span
+                                                            className="text-sm font-bold"
+                                                            style={{ color: isLightTheme ? '#16a34a' : '#0ecb81' }}
+                                                        >
+                                                            {effectivePayout}%
+                                                        </span>
+                                                        <i className="fa-solid fa-chevron-down text-[10px] ml-1" style={{ color: isLightTheme ? '#64748b' : '#848e9c' }}></i>
+                                                    </button>
+                                                    <div className="flex items-center space-x-2">
+                                                        <div
+                                                            className="w-1.5 h-1.5 rounded-full animate-pulse"
+                                                            style={{ backgroundColor: isLightTheme ? '#16a34a' : '#0ecb81' }}
+                                                        ></div>
+                                                        <span
+                                                            className="text-xs font-bold font-mono"
+                                                            style={{ color: isLightTheme ? '#64748b' : '#848e9c' }}
+                                                        >
+                                                            {currentTime}
+                                                        </span>
+                                                    </div>
+                                                </div>
+                                                <div
+                                                    className="pb-safe p-2 mobile-trade-panel"
+                                                    style={{ backgroundColor: surfaceBg }}
+                                                >
+                                                    <TradePanel
+                                                        asset={{ ...selectedAsset, payout: effectivePayout }}
+                                                        balance={balance}
+                                                        onTrade={handleTrade}
+                                                        activeDurations={marketSettings.activeTradeDurations}
+                                                        shortcuts={marketSettings.investmentShortcuts}
+                                                        minInvestment={marketSettings.minInvestment}
+                                                        maxInvestment={marketSettings.maxInvestment}
+                                                        isMobile={true}
+                                                        selectedTimeFrame={selectedTimeFrame}
+                                                        isOTC={isCurrentAssetOTC}
+                                                        theme={userTheme}
+                                                    />
+                                                </div>
+                                            </>
+                                        )}
                 </div>
-                <nav className="mobile-bottom-nav bg-[#1e2329] border-t border-[#2b3139] h-14 flex items-center justify-around z-50">{[{ icon: "fa-right-left", label: "Trade" }, { icon: "fa-trophy", label: "Top" }, { icon: "fa-chart-simple", label: "Markets" }, { icon: "fa-wallet", label: "Wallets" }].map((nav, i) => (<button aria-label={nav.label} key={i} onClick={() => { const tab = nav.label.toUpperCase(); setMobileTab(tab); if (tab === 'MARKETS') setIsAssetListOpen(true); else setIsAssetListOpen(false); }} className="mobile-nav-btn flex flex-col items-center justify-center space-y-1 w-full"><i className={`fa-solid ${nav.icon} text-lg ${nav.label.toUpperCase() === mobileTab ? 'text-[#fcd535]' : 'text-[#848e9c]'}`}></i><span className={`text-[10px] ${nav.label.toUpperCase() === mobileTab ? 'text-white' : 'text-[#848e9c]'}`}>{nav.label}</span></button>))}</nav>
+                                <nav
+                                    className="mobile-bottom-nav h-14 flex items-center justify-around z-50 border-t"
+                                    style={{ backgroundColor: surfaceBg, borderColor }}
+                                >
+                                    {[
+                                        { icon: 'fa-right-left', label: 'Trade' },
+                                        { icon: 'fa-trophy', label: 'Top' },
+                                        { icon: 'fa-chart-simple', label: 'Markets' },
+                                        { icon: 'fa-wallet', label: 'Wallets' },
+                                    ].map((nav, i) => (
+                                        <button
+                                            aria-label={nav.label}
+                                            key={i}
+                                            onClick={() => {
+                                                const tab = nav.label.toUpperCase();
+                                                setMobileTab(tab);
+                                                if (tab === 'MARKETS') setIsAssetListOpen(true);
+                                                else setIsAssetListOpen(false);
+                                            }}
+                                            className="mobile-nav-btn flex flex-col items-center justify-center space-y-1 w-full"
+                                        >
+                                            <i
+                                                className={`fa-solid ${nav.icon} text-lg ${
+                                                    nav.label.toUpperCase() === mobileTab
+                                                        ? 'text-[#fcd535]'
+                                                        : ''
+                                                }`}
+                                                style={{
+                                                    color:
+                                                        nav.label.toUpperCase() === mobileTab
+                                                            ? isLightTheme
+                                                                ? '#eab308'
+                                                                : '#fcd535'
+                                                            : isLightTheme
+                                                            ? '#94a3b8'
+                                                            : '#848e9c',
+                                                }}
+                                            ></i>
+                                            <span
+                                                className="text-[10px]"
+                                                style={{
+                                                    color:
+                                                        nav.label.toUpperCase() === mobileTab
+                                                            ? textPrimary
+                                                            : isLightTheme
+                                                            ? '#94a3b8'
+                                                            : '#848e9c',
+                                                }}
+                                            >
+                                                {nav.label}
+                                            </span>
+                                        </button>
+                                    ))}
+                                </nav>
 
                 {/* Mobile: Trade History modal (opened from chart toolbar) */}
                 {isTradesListOpen && (
                     <div onClick={(e) => e.target === e.currentTarget && setIsTradesListOpen(false)} className="fixed inset-0 z-[70] bg-black/60 backdrop-blur-sm">
                         {/* Mobile: edge-to-edge bottom-sheet on small screens, centered card on md+ */}
                         <div className="w-full h-full md:flex md:items-center md:justify-center">
-                            <div className="mx-auto md:mx-0 w-full md:max-w-3xl h-full md:h-auto bg-[#1e222d] md:rounded-2xl md:max-h-[85vh] overflow-hidden border border-[#2a3040] shadow-2xl animate-in slide-in-from-bottom-2">
+                                                        <div
+                                                            className="mx-auto md:mx-0 w-full md:max-w-3xl h-full md:h-auto md:rounded-2xl md:max-h-[85vh] overflow-hidden border shadow-2xl animate-in slide-in-from-bottom-2"
+                                                            style={{ backgroundColor: surfaceBg, borderColor }}
+                                                        >
                                 <div className="flex flex-col h-full">
-                                    <div className="flex items-center justify-between p-3 border-b border-[#2a3040] bg-[#1e222d]">
-                                            <h3 className="text-white font-bold text-sm">Trade History</h3>
+                                        <div
+                                          className="flex items-center justify-between p-3 border-b"
+                                          style={{ backgroundColor: headerBg, borderColor }}
+                                        >
+                                            <h3 className="font-bold text-sm" style={{ color: textPrimary }}>Trade History</h3>
                                             <button onClick={() => setIsTradesListOpen(false)} className="w-8 h-8 flex items-center justify-center text-[#848e9c] hover:text-white bg-transparent rounded"><i className="fa-solid fa-xmark"></i></button>
                                     </div>
                                       <div className="flex-1 p-0 overflow-hidden">
-                                          <TradeHistory trades={relevantTrades} payout={effectivePayout} isInModal={true} />
+                                          <TradeHistory trades={relevantTrades} payout={effectivePayout} isInModal={true} theme={userTheme} />
                                       </div>
                                 </div>
                             </div>

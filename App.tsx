@@ -4,7 +4,6 @@ import { Asset, CandleData, Trade, MarketSettings, User, AssetType, PaymentReque
 import { INITIAL_ASSETS } from './shared/constants.ts';
 import UserPanel from './user/UserPanel.tsx';
 import AdminPanel from './admin/AdminPanel.tsx';
-import OptionsTradingHomePage from './components/OptionsTradingHomePage.tsx';
 import { ToastContainer, notify } from './shared/notify';
 import { ConfirmDialog } from './shared/confirm';
 
@@ -23,8 +22,8 @@ interface UserAuthScreenProps {
   embedded?: boolean;
 }
 
-const UserAuthScreen: React.FC<UserAuthScreenProps> = ({ onSubmit, embedded }) => {
-  const [mode, setMode] = useState<'LOGIN' | 'SIGNUP'>('LOGIN');
+export const UserAuthScreen: React.FC<UserAuthScreenProps & { initialMode?: 'LOGIN' | 'SIGNUP' }> = ({ onSubmit, embedded, initialMode }) => {
+  const [mode, setMode] = useState<'LOGIN' | 'SIGNUP'>(initialMode || 'LOGIN');
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -38,102 +37,120 @@ const UserAuthScreen: React.FC<UserAuthScreenProps> = ({ onSubmit, embedded }) =
     setLoading(false);
   };
 
-  const content = (
-      <div className="w-full max-w-md bg-[#020617] border border-white/5 rounded-3xl shadow-2xl shadow-black/60 p-6 sm:p-8 space-y-6">
-        <div className="text-center space-y-2">
-          <h1 className="text-2xl sm:text-3xl font-black tracking-tight">GEMINI<span className="text-[#0ecb81]">X</span></h1>
-          <p className="text-xs text-slate-400 font-semibold uppercase tracking-[0.25em]">
-            Secure Trading Access
-          </p>
-        </div>
-
-        <div className="flex bg-black/40 rounded-full p-1 border border-white/5 text-[11px] font-bold uppercase tracking-wide">
-          <button
-            type="button"
-            onClick={() => setMode('LOGIN')}
-            className={`flex-1 py-2 rounded-full transition-colors ${
-              mode === 'LOGIN'
-                ? 'bg-[#0ecb81] text-black'
-                : 'text-slate-400 hover:text-white'
-            }`}
-          >
-            Login
-          </button>
-          <button
-            type="button"
-            onClick={() => setMode('SIGNUP')}
-            className={`flex-1 py-2 rounded-full transition-colors ${
-              mode === 'SIGNUP'
-                ? 'bg-[#22c55e]/10 text-[#22c55e]'
-                : 'text-slate-400 hover:text-white'
-            }`}
-          >
-            Sign Up
-          </button>
-        </div>
-
-        <form onSubmit={handleSubmit} className="space-y-4 text-sm">
-          {mode === 'SIGNUP' && (
-            <div className="space-y-1">
-              <label className="text-[11px] font-semibold text-slate-400 uppercase tracking-wide">
-                Full Name
-              </label>
-              <input
-                type="text"
-                value={name}
-                onChange={(e) => setName(e.target.value)}
-                className="w-full rounded-lg bg-black/40 border border-white/10 px-3 py-2 text-xs focus:outline-none focus:border-[#0ecb81]"
-                placeholder="John Doe"
-              />
-            </div>
-          )}
-
-          <div className="space-y-1">
-            <label className="text-[11px] font-semibold text-slate-400 uppercase tracking-wide">
-              Email
-            </label>
-            <input
-              type="email"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              className="w-full rounded-lg bg-black/40 border border-white/10 px-3 py-2 text-xs focus:outline-none focus:border-[#0ecb81]"
-              placeholder="you@example.com"
-            />
-          </div>
-
-          <div className="space-y-1">
-            <label className="text-[11px] font-semibold text-slate-400 uppercase tracking-wide">
-              Password
-            </label>
-            <input
-              type="password"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              className="w-full rounded-lg bg-black/40 border border-white/10 px-3 py-2 text-xs focus:outline-none focus:border-[#0ecb81]"
-              placeholder="••••••••"
-            />
-          </div>
-
-          <button
-            type="submit"
-            disabled={loading}
-            className="w-full mt-2 py-2.5 rounded-lg bg-[#0ecb81] text-black text-xs font-black uppercase tracking-[0.25em] disabled:opacity-60 disabled:pointer-events-none"
-          >
-            {mode === 'LOGIN' ? 'Enter Terminal' : 'Create Account'}
-          </button>
-
-          <p className="text-[10px] text-slate-500 text-center mt-2">
-            This is a demo auth layer (no real backend).
-          </p>
-        </form>
+  const formContent = (
+    <div className="w-full max-w-md bg-gradient-to-br from-slate-900 via-slate-950 to-black border border-slate-800 rounded-2xl sm:rounded-3xl shadow-2xl shadow-black/60 p-4 sm:p-8 space-y-6 mx-auto mt-8 sm:mt-16" style={{ minWidth: 0 }}>
+      <div className="pt-4 text-center space-y-2">
+        <h1 className="text-3xl sm:text-4xl font-black tracking-tight text-white drop-shadow-lg">Welcome to <span className="text-emerald-400">SMBinary.COM</span></h1>
+        <p className="text-xs text-slate-400 font-semibold uppercase tracking-[0.25em]">Secure Trading Access</p>
       </div>
+      <form onSubmit={handleSubmit} className="space-y-4 text-sm">
+        {mode === 'SIGNUP' && (
+          <div className="space-y-1">
+            <label className="text-[11px] font-semibold text-slate-400 uppercase tracking-wide">Full Name</label>
+            <input
+              type="text"
+              value={name}
+              onChange={(e) => setName(e.target.value)}
+              className="w-full rounded-lg bg-black/40 border border-emerald-400/20 px-3 py-2 text-xs focus:outline-none focus:border-emerald-400"
+              placeholder="John Doe"
+            />
+          </div>
+        )}
+        <div className="space-y-1">
+          <label className="text-[11px] font-semibold text-slate-400 uppercase tracking-wide">Email</label>
+          <input
+            type="email"
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+            className="w-full rounded-lg bg-black/40 border border-emerald-400/20 px-3 py-2 text-xs focus:outline-none focus:border-emerald-400"
+            placeholder="you@example.com"
+          />
+        </div>
+        <div className="space-y-1">
+          <label className="text-[11px] font-semibold text-slate-400 uppercase tracking-wide">Password</label>
+          <input
+            type="password"
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+            className="w-full rounded-lg bg-black/40 border border-emerald-400/20 px-3 py-2 text-xs focus:outline-none focus:border-emerald-400"
+            placeholder="••••••••"
+          />
+        </div>
+        <button
+          type="submit"
+          disabled={loading}
+          className="w-full mt-2 py-2.5 rounded-lg bg-gradient-to-r from-emerald-400 to-cyan-400 text-black text-xs font-black uppercase tracking-[0.25em] shadow-lg hover:from-emerald-500 hover:to-cyan-500 transition-all disabled:opacity-60 disabled:pointer-events-none"
+        >
+          {mode === 'LOGIN' ? 'Enter Terminal' : 'Create Account'}
+        </button>
+        <p className="text-[10px] text-slate-500 text-center mt-2">This is a demo auth layer (no real backend).</p>
+      </form>
+    </div>
   );
 
-  if (embedded) return content;
+  // Add Home navigation
+  const header = (
+    <header className="sticky top-0 z-40 border-b border-slate-800/80 bg-slate-950/85 backdrop-blur-xl w-full">
+      <div className="flex h-16 items-center justify-between px-4">
+        {/* Logo */}
+        <div className="flex items-center space-x-2">
+          <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-gradient-to-br from-emerald-400 to-cyan-500 shadow-lg shadow-emerald-500/40">
+            <span className="text-lg font-black text-slate-950">GX</span>
+          </div>
+          <div className="flex-col text-xs font-semibold text-slate-300">
+            <span className="text-sm font-black tracking-tight text-white">SMBinary.COM</span>
+            <span className="text-[10px] uppercase tracking-[0.25em] text-emerald-300/80">Options Trading</span>
+          </div>
+        </div>
+        {/* Center nav */}
+        <nav className="hidden md:flex items-center space-x-8 text-xs font-medium text-slate-300">
+          <a href="#demo" className="hover:text-emerald-300 transition-colors">Demo account</a>
+          <a href="#about" className="hover:text-emerald-300 transition-colors">About us</a>
+          <a href="#faq" className="hover:text-emerald-300 transition-colors">FAQ</a>
+          <a href="#blog" className="hover:text-emerald-300 transition-colors">Blog</a>
+        </nav>
+        {/* Right actions */}
+        <div className="flex items-center space-x-3 text-xs">
+          <button
+            className="rounded-full border border-slate-500/60 px-4 py-1.5 font-semibold text-slate-100 hover:border-emerald-400 hover:text-emerald-300 transition-colors"
+            onClick={() => {
+              if (typeof window !== 'undefined') {
+                window.history.pushState({}, '', '/');
+                window.dispatchEvent(new PopStateEvent('popstate'));
+              }
+            }}
+          >
+            Home
+          </button>
+          <button
+            className={`rounded-full border border-slate-500/60 px-4 py-1.5 font-semibold text-slate-100 hover:border-emerald-400 hover:text-emerald-300 transition-colors ${mode === 'LOGIN' ? 'bg-emerald-500 text-black border-emerald-400' : ''}`}
+            onClick={() => setMode('LOGIN')}
+          >
+            Log in
+          </button>
+          <button
+            className={`rounded-full bg-emerald-500 px-4 py-1.5 font-semibold text-slate-950 shadow-lg shadow-emerald-500/40 hover:bg-emerald-400 transition-transform hover:-translate-y-0.5 ${mode === 'SIGNUP' ? 'ring-2 ring-emerald-400' : ''}`}
+            onClick={() => setMode('SIGNUP')}
+          >
+            Sign up
+          </button>
+          <button className="inline-flex items-center space-x-1 rounded-full border border-slate-600/70 bg-slate-900/60 px-3 py-1.5 font-semibold text-slate-200 text-[11px]">
+            <span>EN</span>
+            <i className="fa-solid fa-chevron-down text-[9px]" />
+          </button>
+        </div>
+      </div>
+    </header>
+  );
+
+  if (embedded) return formContent;
 
   return (
-    <div className="flex h-[100dvh] w-screen bg-[#020617] text-white items-center justify-center px-4">
-      {content}
+    <div className="flex flex-col h-[100dvh] w-screen bg-[#020617] text-white">
+      {header}
+      <div className="flex-1 flex items-center justify-center px-4">
+        {formContent}
+      </div>
     </div>
   );
 };
@@ -180,8 +197,13 @@ const LandingPage: React.FC<LandingPageProps> = ({ onAuthSubmit }) => {
   );
 };
 
-const App: React.FC = () => {
+interface AppProps {
+  authScreenMode?: 'LOGIN' | 'SIGNUP';
+}
+
+const App: React.FC<AppProps> = ({ authScreenMode }) => {
   const [viewMode, setViewMode] = useState<'USER' | 'ADMIN'>(() => {
+    // Ensure admin dashboard is rendered immediately on /st reload
     if (typeof window !== 'undefined' && window.location.pathname === '/st') return 'ADMIN';
     return 'USER';
   });
@@ -210,6 +232,21 @@ const App: React.FC = () => {
       // ignore
     }
   }, []);
+
+  // For live usage, if no user is authenticated on the user view and
+  // we're not on an explicit auth screen, automatically create a demo
+  // user session so the User Panel opens directly.
+  useEffect(() => {
+    if (typeof window === 'undefined') return;
+    if (authUser || viewMode !== 'USER' || authScreenMode) return;
+    const demoUser = { email: 'demo@geminix.pro', name: 'Demo User' };
+    try {
+      window.localStorage.setItem('smbinary_auth_user', JSON.stringify(demoUser));
+    } catch {
+      // ignore storage errors
+    }
+    setAuthUser(demoUser);
+  }, [authUser, viewMode, authScreenMode]);
 
   const navigateTo = (mode: 'USER' | 'ADMIN') => {
     if (typeof window === 'undefined') {
@@ -288,48 +325,657 @@ const App: React.FC = () => {
   const [activeTrades, setActiveTrades] = useState<Trade[]>([]);
   const [selectedTimeFrame, setSelectedTimeFrame] = useState<string>('1m');
 
-  // Payment Requests State
-  const [paymentRequests, setPaymentRequests] = useState<PaymentRequest[]>([]);
+  // Payment Requests State (seeded with demo data in non-production)
+  const [paymentRequests, setPaymentRequests] = useState<PaymentRequest[]>(() => {
+    // if (import.meta.env.PROD) {
+    //   return [];
+    // }
+
+    const now = Date.now();
+    const day = 24 * 60 * 60 * 1000;
+
+    const demoProof = 'https://via.placeholder.com/800x500?text=Payment+Proof';
+
+    const deposits: PaymentRequest[] = [
+      {
+        id: 'dep-1',
+        userId: 'u1',
+        userName: 'Active VIP Trader',
+        type: 'DEPOSIT',
+        amount: 500,
+        method: 'BINANCE_PAY',
+        status: 'APPROVED',
+        date: now - 3 * day,
+        proofUrl: demoProof,
+        transactionId: 'DP-548201-0001',
+      },
+      {
+        id: 'dep-2',
+        userId: 'u1',
+        userName: 'Active VIP Trader',
+        type: 'DEPOSIT',
+        amount: 250,
+        method: 'BINANCE_PAY',
+        status: 'PENDING',
+        date: now - 12 * 60 * 60 * 1000,
+        proofUrl: demoProof,
+        transactionId: 'DP-548201-0002',
+      },
+      {
+        id: 'dep-3',
+        userId: 'u2',
+        userName: 'KYC Pending User',
+        type: 'DEPOSIT',
+        amount: 100,
+        method: 'BINANCE_PAY',
+        status: 'PENDING',
+        date: now - 6 * 60 * 60 * 1000,
+        proofUrl: demoProof,
+        transactionId: 'DP-548201-0003',
+      },
+      {
+        id: 'dep-4',
+        userId: 'u2',
+        userName: 'KYC Pending User',
+        type: 'DEPOSIT',
+        amount: 300,
+        method: 'BINANCE_PAY',
+        status: 'APPROVED',
+        date: now - 7 * day,
+        proofUrl: demoProof,
+        transactionId: 'DP-548201-0004',
+      },
+      {
+        id: 'dep-5',
+        userId: 'u3',
+        userName: 'Banned VPN User',
+        type: 'DEPOSIT',
+        amount: 200,
+        method: 'BINANCE_PAY',
+        status: 'REJECTED',
+        date: now - 2 * day,
+        proofUrl: demoProof,
+        transactionId: 'DP-548201-0005',
+      },
+      {
+        id: 'dep-6',
+        userId: 'u3',
+        userName: 'Banned VPN User',
+        type: 'DEPOSIT',
+        amount: 150,
+        method: 'BINANCE_PAY',
+        status: 'PENDING',
+        date: now - 18 * 60 * 60 * 1000,
+        proofUrl: demoProof,
+        transactionId: 'DP-548201-0006',
+      },
+      {
+        id: 'dep-7',
+        userId: 'u4',
+        userName: 'New Unverified User',
+        type: 'DEPOSIT',
+        amount: 50,
+        method: 'BINANCE_PAY',
+        status: 'APPROVED',
+        date: now - 5 * day,
+        proofUrl: demoProof,
+        transactionId: 'DP-548201-0007',
+      },
+      {
+        id: 'dep-8',
+        userId: 'u4',
+        userName: 'New Unverified User',
+        type: 'DEPOSIT',
+        amount: 75,
+        method: 'BINANCE_PAY',
+        status: 'REJECTED',
+        date: now - 36 * 60 * 60 * 1000,
+        proofUrl: demoProof,
+        transactionId: 'DP-548201-0008',
+      },
+      {
+        id: 'dep-9',
+        userId: 'u1',
+        userName: 'Active VIP Trader',
+        type: 'DEPOSIT',
+        amount: 1200,
+        method: 'BINANCE_PAY',
+        status: 'APPROVED',
+        date: now - 10 * day,
+        proofUrl: demoProof,
+        transactionId: 'DP-548201-0009',
+      },
+      {
+        id: 'dep-10',
+        userId: 'u2',
+        userName: 'KYC Pending User',
+        type: 'DEPOSIT',
+        amount: 40,
+        method: 'BINANCE_PAY',
+        status: 'PENDING',
+        date: now - 90 * 60 * 1000,
+        proofUrl: demoProof,
+        transactionId: 'DP-548201-0010',
+      },
+    ];
+
+    const withdrawals: PaymentRequest[] = [
+      {
+        id: 'wd-1',
+        userId: 'u1',
+        userName: 'Active VIP Trader',
+        type: 'WITHDRAWAL',
+        amount: 300,
+        method: 'BINANCE_PAY',
+        status: 'APPROVED',
+        date: now - 4 * day,
+        proofUrl: demoProof,
+        transactionId: 'WD-772301-0001',
+        targetWallet: 'USDT-TRC20-XXXX-001',
+      },
+      {
+        id: 'wd-2',
+        userId: 'u1',
+        userName: 'Active VIP Trader',
+        type: 'WITHDRAWAL',
+        amount: 150,
+        method: 'BINANCE_PAY',
+        status: 'PENDING',
+        date: now - 3 * 60 * 60 * 1000,
+        proofUrl: demoProof,
+        transactionId: 'WD-772301-0002',
+        targetWallet: 'USDT-TRC20-XXXX-002',
+      },
+      {
+        id: 'wd-3',
+        userId: 'u2',
+        userName: 'KYC Pending User',
+        type: 'WITHDRAWAL',
+        amount: 50,
+        method: 'BINANCE_PAY',
+        status: 'PENDING',
+        date: now - 5 * 60 * 60 * 1000,
+        proofUrl: demoProof,
+        transactionId: 'WD-772301-0003',
+        targetWallet: 'USDT-TRC20-XXXX-003',
+      },
+      {
+        id: 'wd-4',
+        userId: 'u2',
+        userName: 'KYC Pending User',
+        type: 'WITHDRAWAL',
+        amount: 80,
+        method: 'BINANCE_PAY',
+        status: 'REJECTED',
+        date: now - 2 * day,
+        proofUrl: demoProof,
+        transactionId: 'WD-772301-0004',
+        targetWallet: 'USDT-TRC20-XXXX-004',
+      },
+      {
+        id: 'wd-5',
+        userId: 'u3',
+        userName: 'Banned VPN User',
+        type: 'WITHDRAWAL',
+        amount: 120,
+        method: 'BINANCE_PAY',
+        status: 'REJECTED',
+        date: now - 30 * 60 * 1000,
+        proofUrl: demoProof,
+        transactionId: 'WD-772301-0005',
+        targetWallet: 'USDT-TRC20-XXXX-005',
+      },
+      {
+        id: 'wd-6',
+        userId: 'u3',
+        userName: 'Banned VPN User',
+        type: 'WITHDRAWAL',
+        amount: 60,
+        method: 'BINANCE_PAY',
+        status: 'PENDING',
+        date: now - 8 * 60 * 60 * 1000,
+        proofUrl: demoProof,
+        transactionId: 'WD-772301-0006',
+        targetWallet: 'USDT-TRC20-XXXX-006',
+      },
+      {
+        id: 'wd-7',
+        userId: 'u4',
+        userName: 'New Unverified User',
+        type: 'WITHDRAWAL',
+        amount: 20,
+        method: 'BINANCE_PAY',
+        status: 'PENDING',
+        date: now - 18 * 60 * 60 * 1000,
+        proofUrl: demoProof,
+        transactionId: 'WD-772301-0007',
+        targetWallet: 'USDT-TRC20-XXXX-007',
+      },
+      {
+        id: 'wd-8',
+        userId: 'u4',
+        userName: 'New Unverified User',
+        type: 'WITHDRAWAL',
+        amount: 40,
+        method: 'BINANCE_PAY',
+        status: 'APPROVED',
+        date: now - 9 * day,
+        proofUrl: demoProof,
+        transactionId: 'WD-772301-0008',
+        targetWallet: 'USDT-TRC20-XXXX-008',
+      },
+      {
+        id: 'wd-9',
+        userId: 'u1',
+        userName: 'Active VIP Trader',
+        type: 'WITHDRAWAL',
+        amount: 500,
+        method: 'BINANCE_PAY',
+        status: 'APPROVED',
+        date: now - 14 * day,
+        proofUrl: demoProof,
+        transactionId: 'WD-772301-0009',
+        targetWallet: 'USDT-TRC20-XXXX-009',
+      },
+      {
+        id: 'wd-10',
+        userId: 'u2',
+        userName: 'KYC Pending User',
+        type: 'WITHDRAWAL',
+        amount: 30,
+        method: 'BINANCE_PAY',
+        status: 'PENDING',
+        date: now - 45 * 60 * 1000,
+        proofUrl: demoProof,
+        transactionId: 'WD-772301-0010',
+        targetWallet: 'USDT-TRC20-XXXX-010',
+      },
+    ];
+
+    return [...deposits, ...withdrawals];
+  });
   
   // Mock User List for Admin Simulation
-  const [users, setUsers] = useState<User[]>([
-    { 
-      id: '1', 
-      name: 'Demo User', 
-      email: 'user@geminix.pro', 
-      password: 'password123', 
-      balance: 0, 
-      bonusBalance: 0,
-      status: 'ACTIVE', 
-      forceResult: 'NONE', 
-      maxBetSize: 1000,
-      dailyProfitLimit: 5000,
-      payoutOverride: 0,
-      tradeDelayMs: 0,
-      joinedAt: Date.now() - 86400000 * 5,
-      ipAddress: '192.168.1.10',
-      country: 'Bangladesh',
-      device: 'Chrome / Windows 11',
-      lastLogin: Date.now() - 3600000,
-      totalDeposited: 0,
-      totalWithdrawn: 0,
-      totalTurnover: 0,
-      netPnL: 0,
-      isBalanceFrozen: false,
-      forcePasswordReset: false,
-      twoFactorEnabled: false,
-      kycStatus: 'PENDING',
-      riskScore: 15,
-      riskLabel: 'REGULAR',
-      tags: ['Trusted', 'Early Adopter'],
-      activityLogs: [
-        { id: 'l1', action: 'Login', timestamp: Date.now() - 3600000, ip: '192.168.1.10', details: 'Successful login from Dhaka', type: 'INFO' }
-      ],
-      adminNotes: [
-        { id: 'n1', content: 'New user registered.', date: Date.now() - 80000000, author: 'Admin' }
-      ],
-    }
-  ]);
+  // Seed demo users for the admin panel only in non-production builds.
+  // When you connect a real database / API in production, import.meta.env.PROD will be true
+  // and this initializer will return an empty array so demo users are not created.
+  const [users, setUsers] = useState<User[]>(() => {
+    // if (import.meta.env.PROD) {
+    //   return [];
+    // }
+
+    const now = Date.now();
+
+    const demoUsers: User[] = [
+      {
+        id: 'u1',
+        name: 'Active VIP Trader',
+        email: 'vip.trader@example.com',
+        password: 'password123',
+        balance: 4500,
+        bonusBalance: 500,
+        status: 'ACTIVE',
+        forceResult: 'NONE',
+        maxBetSize: 5000,
+        dailyProfitLimit: 20000,
+        payoutOverride: 0,
+        tradeDelayMs: 0,
+        joinedAt: now - 86400000 * 45,
+        ipAddress: '103.145.12.10',
+        country: 'Bangladesh',
+        device: 'Chrome / Windows 11',
+        lastLogin: now - 15 * 60 * 1000,
+        totalDeposited: 8000,
+        totalWithdrawn: 3500,
+        totalTurnover: 42000,
+        netPnL: 1200,
+        isBalanceFrozen: false,
+        forcePasswordReset: false,
+        twoFactorEnabled: true,
+        kycStatus: 'VERIFIED',
+        kycDocs: { front: '', back: '', selfie: '' },
+        riskScore: 35,
+        riskLabel: 'VIP',
+        tags: ['WITH_BALANCE', 'KYC_VERIFIED'],
+        activityLogs: [
+          { id: 'l1', action: 'Login', timestamp: now - 30 * 60 * 1000, ip: '103.145.12.10', details: 'Successful login from Dhaka', type: 'INFO' },
+        ],
+        adminNotes: [
+          { id: 'n1', content: 'High value regular trader.', date: now - 86400000 * 20, author: 'Admin' },
+        ],
+        referralCode: 'VIPTRADER',
+      },
+      {
+        id: 'u2',
+        name: 'KYC Pending User',
+        email: 'kyc.pending@example.com',
+        password: 'password123',
+        balance: 150,
+        bonusBalance: 0,
+        status: 'ACTIVE',
+        forceResult: 'NONE',
+        maxBetSize: 500,
+        dailyProfitLimit: 2000,
+        payoutOverride: 0,
+        tradeDelayMs: 0,
+        joinedAt: now - 86400000 * 7,
+        ipAddress: '102.89.22.5',
+        country: 'Bangladesh',
+        device: 'Safari / iOS',
+        lastLogin: now - 2 * 60 * 60 * 1000,
+        totalDeposited: 200,
+        totalWithdrawn: 0,
+        totalTurnover: 1200,
+        netPnL: -40,
+        isBalanceFrozen: false,
+        forcePasswordReset: false,
+        twoFactorEnabled: false,
+        kycStatus: 'PENDING',
+        kycDocs: { front: '', back: '', selfie: '' },
+        riskScore: 20,
+        riskLabel: 'REGULAR',
+        tags: ['EMAIL_UNVERIFIED'],
+        activityLogs: [
+          { id: 'l2', action: 'KYC submitted', timestamp: now - 3 * 60 * 60 * 1000, ip: '102.89.22.5', details: 'Submitted basic KYC documents', type: 'INFO' },
+        ],
+        adminNotes: [
+          { id: 'n2', content: 'Waiting for compliance review.', date: now - 3 * 60 * 60 * 1000, author: 'Compliance' },
+        ],
+      },
+      {
+        id: 'u3',
+        name: 'Banned VPN User',
+        email: 'vpn.user@example.com',
+        password: 'password123',
+        balance: 300,
+        bonusBalance: 0,
+        status: 'BLOCKED',
+        forceResult: 'NONE',
+        maxBetSize: 200,
+        dailyProfitLimit: 1000,
+        payoutOverride: 0,
+        tradeDelayMs: 0,
+        joinedAt: now - 86400000 * 10,
+        ipAddress: '185.220.101.4',
+        country: 'Bangladesh',
+        device: 'Firefox / Linux',
+        lastLogin: now - 86400000,
+        totalDeposited: 500,
+        totalWithdrawn: 0,
+        totalTurnover: 2500,
+        netPnL: -300,
+        isBalanceFrozen: true,
+        forcePasswordReset: false,
+        twoFactorEnabled: false,
+        kycStatus: 'REJECTED',
+        kycDocs: { front: '', back: '', selfie: '' },
+        riskScore: 85,
+        riskLabel: 'HIGH_RISK',
+        tags: ['VPN_DETECTED', 'MOBILE_UNVERIFIED'],
+        activityLogs: [
+          { id: 'l3', action: 'Suspicious login', timestamp: now - 86400000, ip: '185.220.101.4', details: 'Multiple failed logins from VPN', type: 'DANGER' },
+        ],
+        adminNotes: [
+          { id: 'n3', content: 'Account blocked due to VPN abuse.', date: now - 86400000, author: 'Security' },
+        ],
+      },
+      {
+        id: 'u4',
+        name: 'New Unverified User',
+        email: 'new.user@example.com',
+        password: 'password123',
+        balance: 0,
+        bonusBalance: 0,
+        status: 'ACTIVE',
+        forceResult: 'NONE',
+        maxBetSize: 200,
+        dailyProfitLimit: 1000,
+        payoutOverride: 0,
+        tradeDelayMs: 0,
+        joinedAt: now - 86400000 * 1,
+        ipAddress: '103.120.55.20',
+        country: 'Bangladesh',
+        device: 'Chrome / Android',
+        lastLogin: now - 6 * 60 * 60 * 1000,
+        totalDeposited: 0,
+        totalWithdrawn: 0,
+        totalTurnover: 0,
+        netPnL: 0,
+        isBalanceFrozen: false,
+        forcePasswordReset: false,
+        twoFactorEnabled: false,
+        kycStatus: 'NOT_SUBMITTED',
+        kycDocs: { front: '', back: '', selfie: '' },
+        riskScore: 10,
+        riskLabel: 'REGULAR',
+        tags: ['EMAIL_UNVERIFIED', 'MOBILE_UNVERIFIED'],
+        activityLogs: [
+          { id: 'l4', action: 'Registration', timestamp: now - 86400000, ip: '103.120.55.20', details: 'New account created', type: 'INFO' },
+        ],
+        adminNotes: [
+          { id: 'n4', content: 'Encourage KYC and first deposit.', date: now - 86400000, author: 'Marketing' },
+        ],
+      },
+      {
+        id: 'u5',
+        name: 'BD Affiliate Pro',
+        email: 'affiliate.bd@example.com',
+        password: 'password123',
+        balance: 1200,
+        bonusBalance: 100,
+        status: 'ACTIVE',
+        forceResult: 'NONE',
+        maxBetSize: 2000,
+        dailyProfitLimit: 10000,
+        payoutOverride: 0,
+        tradeDelayMs: 0,
+        joinedAt: now - 86400000 * 25,
+        ipAddress: '103.145.33.21',
+        country: 'Bangladesh',
+        device: 'Chrome / Windows 10',
+        lastLogin: now - 40 * 60 * 1000,
+        totalDeposited: 3000,
+        totalWithdrawn: 900,
+        totalTurnover: 15000,
+        netPnL: 350,
+        isBalanceFrozen: false,
+        forcePasswordReset: false,
+        twoFactorEnabled: true,
+        kycStatus: 'VERIFIED',
+        kycDocs: { front: '', back: '', selfie: '' },
+        riskScore: 28,
+        riskLabel: 'REGULAR',
+        tags: ['WITH_BALANCE', 'KYC_VERIFIED'],
+        activityLogs: [
+          { id: 'l5', action: 'New referral registered', timestamp: now - 2 * 60 * 60 * 1000, ip: '103.145.33.21', details: 'Referred user from Facebook campaign', type: 'INFO' },
+        ],
+        adminNotes: [
+          { id: 'n5', content: 'Strong BD affiliate, stable traffic.', date: now - 86400000 * 10, author: 'Affiliate Manager' },
+        ],
+        referralCode: 'BD-AFF-01',
+      },
+      {
+        id: 'u6',
+        name: 'IN Performance Partner',
+        email: 'affiliate.in@example.com',
+        password: 'password123',
+        balance: 900,
+        bonusBalance: 0,
+        status: 'ACTIVE',
+        forceResult: 'NONE',
+        maxBetSize: 1500,
+        dailyProfitLimit: 8000,
+        payoutOverride: 0,
+        tradeDelayMs: 0,
+        joinedAt: now - 86400000 * 15,
+        ipAddress: '49.207.22.14',
+        country: 'India',
+        device: 'Chrome / Windows 11',
+        lastLogin: now - 75 * 60 * 1000,
+        totalDeposited: 2200,
+        totalWithdrawn: 400,
+        totalTurnover: 11000,
+        netPnL: 180,
+        isBalanceFrozen: false,
+        forcePasswordReset: false,
+        twoFactorEnabled: false,
+        kycStatus: 'VERIFIED',
+        kycDocs: { front: '', back: '', selfie: '' },
+        riskScore: 40,
+        riskLabel: 'VIP',
+        tags: ['WITH_BALANCE', 'KYC_VERIFIED'],
+        activityLogs: [
+          { id: 'l6', action: 'Referral payout processed', timestamp: now - 6 * 60 * 60 * 1000, ip: '49.207.22.14', details: 'Commission paid for January traffic', type: 'INFO' },
+        ],
+        adminNotes: [
+          { id: 'n6', content: 'High quality Indian traffic, low fraud.', date: now - 86400000 * 5, author: 'Affiliate Manager' },
+        ],
+        referralCode: 'IN-AFF-01',
+      },
+      {
+        id: 'u7',
+        name: 'EU Growth Partner',
+        email: 'affiliate.eu@example.com',
+        password: 'password123',
+        balance: 1600,
+        bonusBalance: 200,
+        status: 'ACTIVE',
+        forceResult: 'NONE',
+        maxBetSize: 2500,
+        dailyProfitLimit: 12000,
+        payoutOverride: 0,
+        tradeDelayMs: 0,
+        joinedAt: now - 86400000 * 35,
+        ipAddress: '195.201.14.88',
+        country: 'Germany',
+        device: 'Chrome / macOS',
+        lastLogin: now - 3 * 60 * 60 * 1000,
+        totalDeposited: 4000,
+        totalWithdrawn: 1200,
+        totalTurnover: 20000,
+        netPnL: 420,
+        isBalanceFrozen: false,
+        forcePasswordReset: false,
+        twoFactorEnabled: true,
+        kycStatus: 'VERIFIED',
+        kycDocs: { front: '', back: '', selfie: '' },
+        riskScore: 30,
+        riskLabel: 'REGULAR',
+        tags: ['WITH_BALANCE', 'KYC_VERIFIED'],
+        activityLogs: [
+          { id: 'l7', action: 'New campaign launched', timestamp: now - 12 * 60 * 60 * 1000, ip: '195.201.14.88', details: 'Started EU SEO campaign', type: 'INFO' },
+        ],
+        adminNotes: [
+          { id: 'n7', content: 'Good EU coverage, test higher CPA.', date: now - 86400000 * 3, author: 'Affiliate Manager' },
+        ],
+        referralCode: 'EU-AFF-01',
+      },
+      {
+        id: 'u8',
+        name: 'Referred Trader A',
+        email: 'ref.a@example.com',
+        password: 'password123',
+        balance: 500,
+        bonusBalance: 50,
+        status: 'ACTIVE',
+        forceResult: 'NONE',
+        maxBetSize: 800,
+        dailyProfitLimit: 3000,
+        payoutOverride: 0,
+        tradeDelayMs: 0,
+        joinedAt: now - 86400000 * 5,
+        ipAddress: '103.145.55.31',
+        country: 'Bangladesh',
+        device: 'Android / Chrome',
+        lastLogin: now - 50 * 60 * 1000,
+        totalDeposited: 700,
+        totalWithdrawn: 100,
+        totalTurnover: 3500,
+        netPnL: 90,
+        isBalanceFrozen: false,
+        forcePasswordReset: false,
+        twoFactorEnabled: false,
+        kycStatus: 'PENDING',
+        kycDocs: { front: '', back: '', selfie: '' },
+        riskScore: 18,
+        riskLabel: 'REGULAR',
+        tags: ['WITH_BALANCE'],
+        activityLogs: [],
+        adminNotes: [],
+        uplineId: 'u5',
+      },
+      {
+        id: 'u9',
+        name: 'Referred Trader B',
+        email: 'ref.b@example.com',
+        password: 'password123',
+        balance: 300,
+        bonusBalance: 0,
+        status: 'ACTIVE',
+        forceResult: 'NONE',
+        maxBetSize: 600,
+        dailyProfitLimit: 2500,
+        payoutOverride: 0,
+        tradeDelayMs: 0,
+        joinedAt: now - 86400000 * 3,
+        ipAddress: '49.207.55.21',
+        country: 'India',
+        device: 'iOS / Safari',
+        lastLogin: now - 90 * 60 * 1000,
+        totalDeposited: 500,
+        totalWithdrawn: 0,
+        totalTurnover: 2600,
+        netPnL: -40,
+        isBalanceFrozen: false,
+        forcePasswordReset: false,
+        twoFactorEnabled: false,
+        kycStatus: 'NOT_SUBMITTED',
+        kycDocs: { front: '', back: '', selfie: '' },
+        riskScore: 22,
+        riskLabel: 'REGULAR',
+        tags: [],
+        activityLogs: [],
+        adminNotes: [],
+        uplineId: 'u6',
+      },
+      {
+        id: 'u10',
+        name: 'Referred Trader C',
+        email: 'ref.c@example.com',
+        password: 'password123',
+        balance: 750,
+        bonusBalance: 0,
+        status: 'ACTIVE',
+        forceResult: 'NONE',
+        maxBetSize: 1000,
+        dailyProfitLimit: 4000,
+        payoutOverride: 0,
+        tradeDelayMs: 0,
+        joinedAt: now - 86400000 * 2,
+        ipAddress: '80.145.77.19',
+        country: 'Germany',
+        device: 'Desktop / Chrome',
+        lastLogin: now - 30 * 60 * 1000,
+        totalDeposited: 1200,
+        totalWithdrawn: 0,
+        totalTurnover: 5000,
+        netPnL: 130,
+        isBalanceFrozen: false,
+        forcePasswordReset: false,
+        twoFactorEnabled: false,
+        kycStatus: 'PENDING',
+        kycDocs: { front: '', back: '', selfie: '' },
+        riskScore: 26,
+        riskLabel: 'REGULAR',
+        tags: ['WITH_BALANCE'],
+        activityLogs: [],
+        adminNotes: [],
+        uplineId: 'u7',
+      },
+    ];
+
+    return demoUsers;
+  });
 
   const [marketSettings, setMarketSettings] = useState<MarketSettings>({
     marketMode: 'OTC',
@@ -366,7 +1012,192 @@ const App: React.FC = () => {
       excludedUserIds: [],
       autoRefreshEnabled: false,
       refreshInterval: 30
-    }
+    },
+    adminTheme: {
+      mode: 'LIGHT',
+      primaryColor: '#0f172a',
+      accentColor: '#2563eb',
+      // Fully light workspace including shell elements.
+      backgroundColor: '#f3f4f6',
+      sidebarBackground: '#f9fafb',
+      headerBackground: '#f9fafb',
+      surfaceBackground: '#ffffff',
+      textColor: '#020617',
+    },
+    notifications: {
+      master: {
+        systemNotificationsEnabled: true,
+        userAlertsEnabled: true,
+        financialAlertsEnabled: true,
+        securityAlertsEnabled: true,
+        marketingAnnouncementsEnabled: true,
+        emergencyOverrideActive: false,
+      },
+      channels: {
+        inAppEnabled: true,
+        emailEnabled: true,
+        smsEnabled: false,
+        browserPushEnabled: false,
+        mobilePushEnabled: false,
+        telegramEnabled: false,
+        whatsappEnabled: false,
+      },
+      eventRules: [
+        {
+          eventKey: 'REGISTRATION_WELCOME',
+          enabled: true,
+          channels: ['IN_APP', 'EMAIL'],
+          priority: 'LOW',
+        },
+        {
+          eventKey: 'DEPOSIT_UPDATE',
+          enabled: true,
+          channels: ['IN_APP', 'EMAIL'],
+          priority: 'MEDIUM',
+        },
+        {
+          eventKey: 'WITHDRAWAL_UPDATE',
+          enabled: true,
+          channels: ['IN_APP', 'EMAIL'],
+          priority: 'MEDIUM',
+        },
+        {
+          eventKey: 'KYC_STATUS_CHANGE',
+          enabled: true,
+          channels: ['IN_APP', 'EMAIL'],
+          priority: 'MEDIUM',
+        },
+        {
+          eventKey: 'TRADE_RESULT',
+          enabled: true,
+          channels: ['IN_APP'],
+          priority: 'LOW',
+        },
+        {
+          eventKey: 'BIG_PROFIT_ALERT',
+          enabled: true,
+          channels: ['IN_APP'],
+          priority: 'MEDIUM',
+        },
+        {
+          eventKey: 'SUSPICIOUS_LOGIN',
+          enabled: true,
+          channels: ['IN_APP', 'EMAIL'],
+          priority: 'HIGH',
+        },
+        {
+          eventKey: 'PASSWORD_CHANGE',
+          enabled: true,
+          channels: ['IN_APP', 'EMAIL'],
+          priority: 'HIGH',
+        },
+        {
+          eventKey: 'ACCOUNT_LOCKED',
+          enabled: true,
+          channels: ['IN_APP', 'EMAIL'],
+          priority: 'HIGH',
+        },
+      ],
+      templates: [],
+      userDefaults: {
+        inAppEnabled: true,
+        emailEnabled: true,
+        smsEnabled: false,
+        pushEnabled: false,
+        marketingOptIn: true,
+        quietHoursEnabled: false,
+        quietHoursFrom: '23:00',
+        quietHoursTo: '07:00',
+      },
+      scheduling: {
+        allowScheduledAnnouncements: true,
+        allowMaintenanceScheduling: true,
+        timezoneAwareDelivery: true,
+        defaultSendDelaySeconds: 0,
+      },
+      inAppUx: {
+        toastPosition: 'TOP_RIGHT',
+        autoDismissSeconds: 6,
+        soundEnabled: true,
+        unreadBadgeEnabled: true,
+      },
+      logging: {
+        keepHistoryDays: 30,
+        trackOpens: true,
+        trackClicks: true,
+        enableResend: true,
+      },
+      push: {
+        browserPushEnabled: false,
+        mobilePushEnabled: false,
+        requireExplicitOptIn: true,
+      },
+      language: {
+        enabledLanguages: ['en'],
+        defaultLanguage: 'en',
+      },
+      queueing: {
+        preventDuplicates: true,
+        rateLimitPerMinute: 120,
+        enableQueue: true,
+        maxRetries: 3,
+      },
+    },
+    branding: {
+      logos: {},
+      favicons: {},
+      sizing: {
+        desktopLogoHeight: 32,
+        mobileLogoHeight: 24,
+        sidebarLogoScale: 1,
+        retinaScale: 2,
+      },
+      primaryBrandColor: '#fcd535',
+      brandingHistory: [],
+    },
+    deviceViewPresets: [
+      {
+        id: 'desktop-1920',
+        name: 'Desktop 1920×1080',
+        category: 'DESKTOP',
+        width: 1920,
+        height: 1080,
+        note: 'Standard full HD desktop monitor',
+        orientation: 'LANDSCAPE',
+        status: 'ACTIVE',
+      },
+      {
+        id: 'laptop-1366',
+        name: 'Laptop 1366×768',
+        category: 'LAPTOP',
+        width: 1366,
+        height: 768,
+        note: 'Common notebook resolution',
+        orientation: 'LANDSCAPE',
+        status: 'ACTIVE',
+      },
+      {
+        id: 'tablet-1024',
+        name: 'Tablet 1024×768',
+        category: 'TABLET',
+        width: 1024,
+        height: 768,
+        note: 'Landscape tablet layout',
+        orientation: 'LANDSCAPE',
+        status: 'ACTIVE',
+      },
+      {
+        id: 'mobile-iphone-12-pro',
+        name: 'iPhone 12 Pro 390×844',
+        category: 'MOBILE',
+        width: 390,
+        height: 844,
+        note: 'Typical modern iPhone viewport',
+        orientation: 'PORTRAIT',
+        status: 'ACTIVE',
+      },
+    ],
+    activeDeviceCategory: 'DESKTOP'
   });
 
   const wsRef = useRef<WebSocket | null>(null);
@@ -619,28 +1450,36 @@ const App: React.FC = () => {
 
   const visibleAssets = assets.filter(a => marketSettings.activeSymbols.includes(a.symbol));
 
-  // Unauthenticated home: dedicated marketing landing + auth overlay
-  if (viewMode === 'USER' && !authUser) {
+  // Dedicated login/signup page
+  if ((authScreenMode === 'LOGIN' || authScreenMode === 'SIGNUP') && viewMode === 'USER' && !authUser) {
     return (
-      <>
-        <OptionsTradingHomePage
-          onLoginClick={() => setShowAuthOverlay(true)}
-          onSignupClick={() => setShowAuthOverlay(true)}
-          onPrimaryCtaClick={() => setShowAuthOverlay(true)}
-        />
-        {showAuthOverlay && (
-          <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60">
-            <UserAuthScreen onSubmit={handleAuthSubmit} />
-          </div>
-        )}
-        <ToastContainer />
-        <ConfirmDialog />
-      </>
+      <UserAuthScreen
+        onSubmit={handleAuthSubmit}
+        embedded={false}
+        // Set initial mode
+        {...(authScreenMode === 'SIGNUP' ? { initialMode: 'SIGNUP' } : {})}
+      />
     );
   }
 
+  const adminTheme = marketSettings.adminTheme;
+  const isAdminView = viewMode === 'ADMIN';
+
+  const appBg = isAdminView
+    ? adminTheme?.backgroundColor || '#f3f4f6'
+    : '#020617';
+  const appText = isAdminView
+    ? adminTheme?.textColor || '#020617'
+    : '#EAECEF';
+
   return (
-    <div className="flex h-[100dvh] w-screen bg-black text-white overflow-hidden font-sans">
+    <div
+      className="flex h-[100dvh] w-screen overflow-hidden font-sans"
+      style={{
+        backgroundColor: appBg,
+        color: appText,
+      }}
+    >
       {viewMode === 'USER' ? (
         authUser ? (
           <UserPanel 
@@ -657,7 +1496,11 @@ const App: React.FC = () => {
             onExit={() => navigateTo('USER')} paymentRequests={paymentRequests}
             onDeposit={handleDepositRequest} onWithdraw={handleWithdrawRequest}
           />
-        ) : null
+        ) : (
+          <div className="flex-1 flex items-center justify-center bg-black text-slate-300 text-sm">
+            Initializing demo trading terminal...
+          </div>
+        )
       ) : (
         <AdminPanel 
           settings={marketSettings} onUpdate={setMarketSettings} 

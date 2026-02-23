@@ -1,7 +1,7 @@
 
 import React, { useEffect, useRef, useState } from 'react';
 import { createChart, IChartApi, ISeriesApi, ColorType, CrosshairMode, LineStyle, Coordinate, Time } from 'lightweight-charts';
-import { CandleData, Trade } from '../../shared/types';
+import { CandleData, Trade, AdminThemeSettings } from '../../shared/types';
 
 interface TradingChartProps {
   data: CandleData[];
@@ -12,6 +12,7 @@ interface TradingChartProps {
   activeTimeFrames: string[];
   onTimeFrameChange: (tf: string) => void;
   onToggleTrades?: () => void;
+    theme?: AdminThemeSettings;
 }
 
 const parseTimeFrameToSeconds = (tf: string): number => {
@@ -33,23 +34,38 @@ const AVAILABLE_TIMEFRAMES = [
 ];
 
 const TradingChart: React.FC<TradingChartProps> = ({ 
-  data, currentPrice, symbol, activeTrades, currentTimeFrame, activeTimeFrames, onTimeFrameChange, onToggleTrades 
+    data,
+    currentPrice,
+    symbol,
+    activeTrades,
+    currentTimeFrame,
+    activeTimeFrames,
+    onTimeFrameChange,
+    onToggleTrades,
+    theme,
 }) => {
   const chartContainerRef = useRef<HTMLDivElement>(null);
   const chartRef = useRef<IChartApi | null>(null);
   const candleSeriesRef = useRef<ISeriesApi<"Candlestick"> | null>(null);
   const priceLineRef = useRef<any>(null); 
   
-  const [showTimeframeSelector, setShowTimeframeSelector] = useState(false);
-  const [countdown, setCountdown] = useState<string>('00:00');
+    const [showTimeframeSelector, setShowTimeframeSelector] = useState(false);
+    const [countdown, setCountdown] = useState<string>('00:00');
   
-  // State for rendering Overlay Elements
-  const [tradeBadges, setTradeBadges] = useState<any[]>([]);
-  const [tradeLines, setTradeLines] = useState<any[]>([]);
-  const [countdownBadge, setCountdownBadge] = useState<{ x: number, y: number, time: string } | null>(null);
+    // State for rendering Overlay Elements
+    const [tradeBadges, setTradeBadges] = useState<any[]>([]);
+    const [tradeLines, setTradeLines] = useState<any[]>([]);
+    const [closeTradeBadges, setCloseTradeBadges] = useState<any[]>([]);
+    const [countdownBadge, setCountdownBadge] = useState<{ x: number, y: number, time: string } | null>(null);
   
   const lastCandleRef = useRef<any>(null);
   const selectorRef = useRef<HTMLDivElement>(null);
+
+    const isLight = theme?.mode === 'LIGHT';
+    const textColor = theme?.textColor || (isLight ? '#0f172a' : '#7d8699');
+    const gridLine = isLight ? 'rgba(226,232,240,0.9)' : 'rgba(42,48,64,0.05)';
+    const scaleBorder = isLight ? 'rgba(148,163,184,0.7)' : 'rgba(42,48,64,1)';
+    const crosshairLabelBg = theme?.surfaceBackground || (isLight ? '#e5e7eb' : '#2a3040');
 
   useEffect(() => {
     // Click outside listener for selector
@@ -68,21 +84,39 @@ const TradingChart: React.FC<TradingChartProps> = ({
     if (!chartContainerRef.current) return;
     
     const chart = createChart(chartContainerRef.current, {
-      layout: { background: { type: ColorType.Solid, color: 'transparent' }, textColor: '#7d8699', fontSize: 11, fontFamily: 'Inter' },
-      grid: { vertLines: { color: 'rgba(42, 48, 64, 0)' }, horzLines: { color: 'rgba(42, 48, 64, 0.05)' } },
+            layout: {
+                background: { type: ColorType.Solid, color: 'transparent' },
+                textColor,
+                fontSize: 11,
+                fontFamily: 'Inter',
+            },
+            grid: {
+                vertLines: { color: 'rgba(0,0,0,0)' },
+                horzLines: { color: gridLine },
+            },
       crosshair: { 
           mode: CrosshairMode.Normal,
-          vertLine: { width: 1, color: '#ffffff', style: LineStyle.Dashed, labelBackgroundColor: '#2a3040' },
-          horzLine: { width: 1, color: '#ffffff', style: LineStyle.Dashed, labelBackgroundColor: '#2a3040' }
+                    vertLine: {
+                        width: 1,
+                        color: isLight ? '#0f172a' : '#ffffff',
+                        style: LineStyle.Dashed,
+                        labelBackgroundColor: crosshairLabelBg,
+                    },
+                    horzLine: {
+                        width: 1,
+                        color: isLight ? '#0f172a' : '#ffffff',
+                        style: LineStyle.Dashed,
+                        labelBackgroundColor: crosshairLabelBg,
+                    },
       },
-      rightPriceScale: { borderColor: 'rgba(42, 48, 64, 1)', visible: true },
-      timeScale: { borderColor: 'rgba(42, 48, 64, 1)', timeVisible: true, secondsVisible: true },
+            rightPriceScale: { borderColor: scaleBorder, visible: true },
+            timeScale: { borderColor: scaleBorder, timeVisible: true, secondsVisible: true },
       handleScroll: true,
       handleScale: true,
     });
 
     const candleSeries = (chart as any).addCandlestickSeries({ 
-      upColor: '#00b85e', downColor: '#ff3d3d', borderVisible: false, wickUpColor: '#00b85e', wickDownColor: '#ff3d3d',
+      upColor: '#22c55e', downColor: '#ff3d3d', borderVisible: false, wickUpColor: '#22c55e', wickDownColor: '#ff3d3d',
     });
     candleSeriesRef.current = candleSeries;
     chartRef.current = chart;
@@ -101,7 +135,40 @@ const TradingChart: React.FC<TradingChartProps> = ({
       resizeObserver.disconnect(); 
       chart.remove(); 
     };
-  }, []);
+    }, [crosshairLabelBg, gridLine, scaleBorder, textColor, isLight]);
+
+    useEffect(() => {
+        if (!chartRef.current) return;
+        chartRef.current.applyOptions({
+            layout: {
+                background: { type: ColorType.Solid, color: '#111827' },
+                textColor,
+                fontSize: 11,
+                fontFamily: 'Inter',
+            },
+            grid: {
+                vertLines: { color: 'rgba(0,0,0,0)' },
+                horzLines: { color: gridLine },
+            },
+            crosshair: {
+                mode: CrosshairMode.Normal,
+                vertLine: {
+                    width: 1,
+                    color: isLight ? '#0f172a' : '#ffffff',
+                    style: LineStyle.Dashed,
+                    labelBackgroundColor: crosshairLabelBg,
+                },
+                horzLine: {
+                    width: 1,
+                    color: isLight ? '#0f172a' : '#ffffff',
+                    style: LineStyle.Dashed,
+                    labelBackgroundColor: crosshairLabelBg,
+                },
+            },
+            rightPriceScale: { borderColor: scaleBorder, visible: true },
+            timeScale: { borderColor: scaleBorder, timeVisible: true, secondsVisible: true },
+        });
+    }, [crosshairLabelBg, gridLine, isLight, scaleBorder, textColor]);
 
   useEffect(() => {
     if (candleSeriesRef.current && data.length > 0) {
@@ -267,33 +334,34 @@ const TradingChart: React.FC<TradingChartProps> = ({
             return null;
         };
 
+
+        // Separate open and closed trades
         const openTrades = activeTrades.filter(t => t.status === 'OPEN');
-        
+        const closedTrades = activeTrades.filter(t => t.status !== 'OPEN');
+
         let tempBadges: any[] = [];
+        let closeBadges: any[] = [];
         const finalLines: any[] = [];
 
         const tfSeconds = parseTimeFrameToSeconds(currentTimeFrame);
 
+        // Open trades: show countdown badge
         openTrades.forEach(trade => {
             const y = candleSeriesRef.current!.priceToCoordinate(trade.entryPrice);
-            if (y === null) return; 
+            if (y === null) return;
 
             const rawEntryTime = Math.floor(trade.startTime / 1000);
             const rawExpiryTime = Math.floor(trade.expiryTime / 1000);
 
-            // Align entry horizontally to centre of its timeframe candle
             const bucketEntryTime = Math.floor(rawEntryTime / tfSeconds) * tfSeconds;
-            // Align close horizontally to its own timeframe bucket
             const bucketExitTime = Math.floor(rawExpiryTime / tfSeconds) * tfSeconds;
 
             const x1 = getX(bucketEntryTime);
             const x2 = getX(bucketExitTime);
-            
             if (x1 === null || x2 === null) return;
 
-            const color = trade.type === 'CALL' ? '#00b85e' : '#ff3d3d';
+            const color = trade.type === 'CALL' ? '#22c55e' : '#ff3d3d';
 
-            // Compute close-point Y: top of the closing candle if available
             let closeY = y;
             const exitCandle = candleMap.get(bucketExitTime);
             if (exitCandle) {
@@ -301,19 +369,17 @@ const TradingChart: React.FC<TradingChartProps> = ({
                 if (cy !== null) closeY = cy;
             }
 
-            // 1. MAIN TRADE LINE: horizontal at entry price
             finalLines.push({
                 id: trade.id,
                 x1: x1,
                 y1: y,
-                x2: x2, 
+                x2: x2,
                 y2: y,
                 exitY: closeY,
                 color: color,
                 isMain: true
             });
 
-            // 2. BADGE DATA PREP
             const now = Date.now();
             const timeLeftMs = Math.max(0, trade.expiryTime - now);
             const totalSeconds = Math.ceil(timeLeftMs / 1000);
@@ -323,14 +389,44 @@ const TradingChart: React.FC<TradingChartProps> = ({
 
             tempBadges.push({
                 id: trade.id,
-                realX: x1, // Actual entry X
-                y: y, // Actual Price Y
-                // Original behavior: badge aligned with entry price line
+                realX: x1,
+                y: y,
                 displayY: y,
                 type: trade.type,
                 amount: trade.amount,
                 time: timeString,
                 color: color
+            });
+        });
+
+        // Closed trades: show profit/loss badge at close candle
+        closedTrades.forEach(trade => {
+            const rawEntryTime = Math.floor(trade.startTime / 1000);
+            const rawExpiryTime = Math.floor(trade.expiryTime / 1000);
+            const bucketExitTime = Math.floor(rawExpiryTime / tfSeconds) * tfSeconds;
+            const x2 = getX(bucketExitTime);
+            const exitCandle = candleMap.get(bucketExitTime);
+            let closeY = null;
+            if (exitCandle) {
+                closeY = candleSeriesRef.current!.priceToCoordinate(exitCandle.high);
+            }
+            if (x2 === null || closeY === null) return;
+
+            // Calculate profit/loss
+            let pnl = 0;
+            if (trade.status === 'WIN') {
+                pnl = trade.amount * (trade.payoutAtTrade / 100);
+            } else if (trade.status === 'LOSS') {
+                pnl = -trade.amount;
+            }
+
+            closeBadges.push({
+                id: trade.id + '-close',
+                x: x2 + 40, // offset to right of close candle
+                y: closeY,
+                pnl,
+                status: trade.status,
+                color: pnl > 0 ? '#22c55e' : '#ff3d3d',
             });
         });
 
@@ -385,6 +481,7 @@ const TradingChart: React.FC<TradingChartProps> = ({
         
         setTradeBadges(processedBadges);
         setTradeLines(finalLines);
+        setCloseTradeBadges(closeBadges);
 
         // --- Countdown Badge Position ---
         const currentPriceY = candleSeriesRef.current!.priceToCoordinate(currentPrice);
@@ -455,8 +552,6 @@ const TradingChart: React.FC<TradingChartProps> = ({
                 style={{ 
                     left: badge.renderX, 
                     top: badge.displayY, 
-                    // Original: anchor on the right so badge extends
-                    // leftwards from the entry line.
                     transform: 'translate(-100%, -50%)', 
                     zIndex: 30,
                     backgroundColor: badge.color,
@@ -467,6 +562,23 @@ const TradingChart: React.FC<TradingChartProps> = ({
                 <span className="text-white font-bold text-[10px] mr-1.5 font-mono">${badge.amount}</span>
                 <div className="h-3 w-[1px] bg-white/30 mr-1.5"></div>
                 <span className="text-white font-mono font-bold text-[10px] tracking-wide w-[28px] text-center">{badge.time}</span>
+            </div>
+        ))}
+
+        {/* Profit/Loss badge for closed trades */}
+        {closeTradeBadges.map((badge: any) => (
+            <div
+                key={badge.id}
+                className={`absolute flex items-center px-2 py-1 rounded shadow-md font-mono text-[11px] font-bold ${badge.pnl > 0 ? 'bg-[#00b85e]' : 'bg-[#ff3d3d]'} text-white`}
+                style={{
+                    left: badge.x,
+                    top: badge.y,
+                    transform: 'translate(0, -50%)',
+                    zIndex: 40,
+                }}
+            >
+                <i className={`fa-solid ${badge.pnl > 0 ? 'fa-circle-check' : 'fa-circle-xmark'} text-white text-xs mr-1`}></i>
+                {badge.pnl > 0 ? `+${badge.pnl.toFixed(2)}` : badge.pnl.toFixed(2)}
             </div>
         ))}
 

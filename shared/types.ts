@@ -91,6 +91,207 @@ export interface LeaderboardConfig {
   refreshInterval: number; // in seconds
 }
 
+export type AdminThemeMode = 'DARK' | 'LIGHT' | 'CUSTOM';
+
+export type DeviceCategory = 'DESKTOP' | 'LAPTOP' | 'TABLET' | 'MOBILE';
+
+export type DeviceOrientation = 'PORTRAIT' | 'LANDSCAPE';
+
+export type DevicePresetStatus = 'ACTIVE' | 'PENDING' | 'REJECTED';
+
+export interface DeviceViewPreset {
+  id: string;
+  name: string;
+  category: DeviceCategory;
+  width: number;
+  height: number;
+  note?: string;
+  orientation?: DeviceOrientation;
+  status?: DevicePresetStatus;
+}
+
+export interface AdminThemeSettings {
+  mode: AdminThemeMode;
+  primaryColor: string;
+  accentColor: string;
+  backgroundColor: string;
+  sidebarBackground: string;
+  headerBackground: string;
+  surfaceBackground: string;
+  textColor: string;
+}
+
+export type LogoUsageType =
+  | 'MAIN_WEBSITE'
+  | 'ADMIN_PANEL'
+  | 'MOBILE'
+  | 'DARK_MODE'
+  | 'LIGHT_MODE'
+  | 'EMAIL'
+  | 'FOOTER';
+
+export interface BrandingLogos {
+  MAIN_WEBSITE?: string;
+  ADMIN_PANEL?: string;
+  MOBILE?: string;
+  DARK_MODE?: string;
+  LIGHT_MODE?: string;
+  EMAIL?: string;
+  FOOTER?: string;
+}
+
+export interface BrandingFavicons {
+  favicon16?: string;
+  favicon32?: string;
+  favicon48?: string;
+  appleTouchIcon?: string;
+  androidChrome192?: string;
+  pwa512?: string;
+  windowsTile?: string;
+}
+
+export interface BrandingSizing {
+  desktopLogoHeight: number;
+  mobileLogoHeight: number;
+  sidebarLogoScale: number; // 0.5 - 2.0
+  retinaScale: number; // 1x, 1.5x, 2x
+}
+
+export interface BrandingSnapshot {
+  id: string;
+  label: string;
+  createdAt: number;
+  logos: BrandingLogos;
+  favicons: BrandingFavicons;
+  sizing: BrandingSizing;
+  primaryBrandColor: string;
+}
+
+export interface BrandingSettings {
+  logos: BrandingLogos;
+  favicons: BrandingFavicons;
+  sizing: BrandingSizing;
+  primaryBrandColor: string;
+  brandingHistory: BrandingSnapshot[];
+}
+
+export type NotificationChannel = 'IN_APP' | 'EMAIL' | 'SMS' | 'BROWSER_PUSH' | 'MOBILE_PUSH' | 'TELEGRAM' | 'WHATSAPP';
+
+export type NotificationPriority = 'HIGH' | 'MEDIUM' | 'LOW';
+
+export interface NotificationMasterToggles {
+  systemNotificationsEnabled: boolean;
+  userAlertsEnabled: boolean;
+  financialAlertsEnabled: boolean;
+  securityAlertsEnabled: boolean;
+  marketingAnnouncementsEnabled: boolean;
+  emergencyOverrideActive: boolean;
+}
+
+export interface NotificationChannelConfig {
+  inAppEnabled: boolean;
+  emailEnabled: boolean;
+  smsEnabled: boolean;
+  browserPushEnabled: boolean;
+  mobilePushEnabled: boolean;
+  telegramEnabled: boolean;
+  whatsappEnabled: boolean;
+}
+
+export interface NotificationEventChannelRule {
+  eventKey:
+    | 'REGISTRATION_WELCOME'
+    | 'DEPOSIT_UPDATE'
+    | 'WITHDRAWAL_UPDATE'
+    | 'KYC_STATUS_CHANGE'
+    | 'TRADE_RESULT'
+    | 'BIG_PROFIT_ALERT'
+    | 'SUSPICIOUS_LOGIN'
+    | 'PASSWORD_CHANGE'
+    | 'ACCOUNT_LOCKED';
+  enabled: boolean;
+  channels: NotificationChannel[];
+  priority: NotificationPriority;
+}
+
+export interface NotificationTemplate {
+  id: string;
+  name: string;
+  type:
+    | 'WELCOME'
+    | 'DEPOSIT_CONFIRMATION'
+    | 'WITHDRAWAL_APPROVAL'
+    | 'SECURITY_ALERT';
+  language: string;
+  subject?: string;
+  body: string;
+  channels: NotificationChannel[];
+}
+
+export interface UserNotificationDefaults {
+  inAppEnabled: boolean;
+  emailEnabled: boolean;
+  smsEnabled: boolean;
+  pushEnabled: boolean;
+  marketingOptIn: boolean;
+  quietHoursEnabled: boolean;
+  quietHoursFrom?: string; // HH:mm
+  quietHoursTo?: string; // HH:mm
+}
+
+export interface NotificationSchedulingSettings {
+  allowScheduledAnnouncements: boolean;
+  allowMaintenanceScheduling: boolean;
+  timezoneAwareDelivery: boolean;
+  defaultSendDelaySeconds: number;
+}
+
+export interface InAppNotificationUxSettings {
+  toastPosition: 'TOP_RIGHT' | 'TOP_LEFT' | 'BOTTOM_RIGHT' | 'BOTTOM_LEFT';
+  autoDismissSeconds: number;
+  soundEnabled: boolean;
+  unreadBadgeEnabled: boolean;
+}
+
+export interface NotificationLoggingSettings {
+  keepHistoryDays: number;
+  trackOpens: boolean;
+  trackClicks: boolean;
+  enableResend: boolean;
+}
+
+export interface PushNotificationSettings {
+  browserPushEnabled: boolean;
+  mobilePushEnabled: boolean;
+  requireExplicitOptIn: boolean;
+}
+
+export interface NotificationLanguageSettings {
+  enabledLanguages: string[];
+  defaultLanguage: string;
+}
+
+export interface NotificationQueueSettings {
+  preventDuplicates: boolean;
+  rateLimitPerMinute: number;
+  enableQueue: boolean;
+  maxRetries: number;
+}
+
+export interface NotificationSettings {
+  master: NotificationMasterToggles;
+  channels: NotificationChannelConfig;
+  eventRules: NotificationEventChannelRule[];
+  templates: NotificationTemplate[];
+  userDefaults: UserNotificationDefaults;
+  scheduling: NotificationSchedulingSettings;
+  inAppUx: InAppNotificationUxSettings;
+  logging: NotificationLoggingSettings;
+  push: PushNotificationSettings;
+  language: NotificationLanguageSettings;
+  queueing: NotificationQueueSettings;
+}
+
 export interface MarketSettings {
   marketMode: 'REAL' | 'OTC';
   payoutMultiplier: number;
@@ -111,6 +312,11 @@ export interface MarketSettings {
   adminBinancePayId: string;
   isLeaderboardEnabled: boolean;
   leaderboardConfig: LeaderboardConfig; // New integrated config
+  adminTheme: AdminThemeSettings;
+  branding: BrandingSettings;
+  notifications: NotificationSettings;
+  deviceViewPresets: DeviceViewPreset[];
+  activeDeviceCategory: DeviceCategory;
 }
 
 export interface AdminNote {
@@ -164,4 +370,5 @@ export interface User {
   adminNotes: AdminNote[];
   referralCode?: string;
   uplineId?: string;
+  gender?: 'MALE' | 'FEMALE' | 'OTHER';
 }

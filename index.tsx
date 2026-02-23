@@ -1,7 +1,7 @@
 
 import React from 'react';
 import ReactDOM from 'react-dom/client';
-import App from './App.tsx';
+import Router from './Router.tsx';
 // Device detection: perform quick tagging before initial render for immediate CSS tweaks
 if (typeof window !== 'undefined') {
   try {
@@ -22,6 +22,6 @@ if (!rootElement) {
 const root = ReactDOM.createRoot(rootElement);
 root.render(
   <React.StrictMode>
-    <App />
+    <Router />
   </React.StrictMode>
 );

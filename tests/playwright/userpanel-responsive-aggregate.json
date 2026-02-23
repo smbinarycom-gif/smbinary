@@ -1,132 +1,53 @@
 {
   "iPhone_SE": {
-    "w": 320,
-    "h": 568,
-    "issues": [
-      "TEXT_OVERFLOW:DIV,DIV,DIV,BUTTON,SPAN,BUTTON"
-    ]
+    "error": "Error: locator.click: Test ended.\nCall log:\n\u001b[2m  - waiting for locator('text=ENTER TERMINAL').first()\u001b[22m\n"
   },
   "iPhone_XR": {
-    "w": 414,
-    "h": 896,
-    "issues": [
-      "TEXT_OVERFLOW:DIV,DIV,DIV,BUTTON,SPAN,BUTTON"
-    ]
+    "error": "Error: browser.newContext: Test ended.\nBrowser logs:\n\n<launching> /Users/sumonmollik/Library/Caches/ms-playwright/chromium_headless_shell-1208/chrome-headless-shell-mac-arm64/chrome-headless-shell --disable-field-trial-config --disable-background-networking --disable-background-timer-throttling --disable-backgrounding-occluded-windows --disable-back-forward-cache --disable-breakpad --disable-client-side-phishing-detection --disable-component-extensions-with-background-pages --disable-component-update --no-default-browser-check --disable-default-apps --disable-dev-shm-usage --disable-extensions --disable-features=AvoidUnnecessaryBeforeUnloadCheckSync,BoundaryEventDispatchTracksNodeRemoval,DestroyProfileOnBrowserClose,DialMediaRouteProvider,GlobalMediaControls,HttpsUpgrades,LensOverlay,MediaRouter,PaintHolding,ThirdPartyStoragePartitioning,Translate,AutoDeElevate,RenderDocument,OptimizationHints --enable-features=CDPScreenshotNewSurface --allow-pre-commit-input --disable-hang-monitor --disable-ipc-flooding-protection --disable-popup-blocking --disable-prompt-on-repost --disable-renderer-backgrounding --force-color-profile=srgb --metrics-recording-only --no-first-run --password-store=basic --use-mock-keychain --no-service-autorun --export-tagged-pdf --disable-search-engine-choice-screen --unsafely-disable-devtools-self-xss-warnings --edge-skip-compat-layer-relaunch --enable-automation --disable-infobars --disable-search-engine-choice-screen --disable-sync --headless --hide-scrollbars --mute-audio --blink-settings=primaryHoverType=2,availableHoverTypes=2,primaryPointerType=4,availablePointerTypes=4 --no-sandbox --user-data-dir=/var/folders/v1/17t97tm532z8g_d5ryk8kbx00000gn/T/playwright_chromiumdev_profile-HrEa4e --remote-debugging-pipe --no-startup-window\n<launched> pid=95270\n[pid=95270][err] [0222/040707.566383:INFO:CONSOLE:64] \"cdn.tailwindcss.com should not be used in production. To use Tailwind CSS in production, install it as a PostCSS plugin or use the Tailwind CLI: https://tailwindcss.com/docs/installation\", source: https://cdn.tailwindcss.com/ (64)\n[pid=95270][err] [0222/040707.614013:INFO:CONSOLE:789] \"[vite] connecting...\", source: http://localhost:3000/@vite/client (789)\n[pid=95270][err] [0222/040707.655391:INFO:CONSOLE:912] \"[vite] connected.\", source: http://localhost:3000/@vite/client (912)\n[pid=95270][err] [0222/041628.495368:INFO:CONSOLE:883] \"[vite] hot updated: /components/OptionsTradingHomePage.tsx\", source: http://localhost:3000/@vite/client (883)\n[pid=95270][err] [0222/041629.265108:INFO:CONSOLE:882] \"[vite] Failed to reload /App.tsx. This could be due to syntax errors or importing non-existent modules. (see errors above)\", source: http://localhost:3000/@vite/client (882)\n[pid=95270][err] [0222/041629.265308:INFO:CONSOLE:883] \"[vite] hot updated: /App.tsx\", source: http://localhost:3000/@vite/client (883)\n[pid=95270][err] [0222/041629.265341:INFO:CONSOLE:964] \"[vite] server connection lost. Polling for restart...\", source: http://localhost:3000/@vite/client (964)\n[pid=95270] <gracefully close start>"
   },
   "iPhone_12_Pro": {
-    "w": 390,
-    "h": 664,
-    "issues": [
-      "TEXT_OVERFLOW:DIV,DIV,DIV,BUTTON,SPAN,BUTTON"
-    ]
+    "error": "Error: browser.newContext: Target page, context or browser has been closed"
   },
   "iPhone_14_Pro_Max": {
-    "w": 430,
-    "h": 740,
-    "issues": [
-      "TEXT_OVERFLOW:DIV,DIV,DIV,BUTTON,BUTTON,BUTTON"
-    ]
+    "error": "Error: browser.newContext: Target page, context or browser has been closed"
   },
   "Pixel_7": {
-    "w": 412,
-    "h": 839,
-    "issues": [
-      "TEXT_OVERFLOW:DIV,DIV,DIV,BUTTON,SPAN,BUTTON"
-    ]
+    "error": "Error: browser.newContext: Target page, context or browser has been closed"
   },
   "Galaxy_S8_plus": {
-    "w": 360,
-    "h": 740,
-    "issues": [
-      "TEXT_OVERFLOW:DIV,DIV,DIV,BUTTON,SPAN,BUTTON"
-    ]
+    "error": "Error: browser.newContext: Target page, context or browser has been closed"
   },
   "Galaxy_S20_Ultra": {
-    "w": 1280,
-    "h": 720,
-    "issues": [
-      "SMALL_TOUCH:BUTTON,BUTTON,BUTTON,BUTTON,BUTTON",
-      "TEXT_OVERFLOW:DIV"
-    ]
+    "error": "Error: browser.newContext: Target page, context or browser has been closed"
   },
   "iPad_Mini": {
-    "w": 768,
-    "h": 1024,
-    "issues": [
-      "SMALL_TOUCH:INPUT",
-      "TEXT_OVERFLOW:ASIDE,DIV,BUTTON,BUTTON,BUTTON,BUTTON"
-    ]
+    "error": "Error: browser.newContext: Target page, context or browser has been closed"
   },
   "iPad_Air": {
-    "w": 1280,
-    "h": 720,
-    "issues": [
-      "SMALL_TOUCH:BUTTON,BUTTON,BUTTON,BUTTON,BUTTON",
-      "TEXT_OVERFLOW:DIV"
-    ]
+    "error": "Error: browser.newContext: Target page, context or browser has been closed"
   },
   "iPad_Pro": {
-    "w": 1280,
-    "h": 720,
-    "issues": [
-      "SMALL_TOUCH:BUTTON,BUTTON,BUTTON,BUTTON,BUTTON",
-      "TEXT_OVERFLOW:DIV"
-    ]
+    "error": "Error: browser.newContext: Target page, context or browser has been closed"
   },
   "Surface_Pro_7": {
-    "w": 1366,
-    "h": 768,
-    "issues": [
-      "SMALL_TOUCH:BUTTON,BUTTON,BUTTON,BUTTON,BUTTON",
-      "TEXT_OVERFLOW:DIV"
-    ]
+    "error": "Error: browser.newContext: Target page, context or browser has been closed"
   },
   "Surface_Duo": {
-    "w": 1280,
-    "h": 720,
-    "issues": [
-      "SMALL_TOUCH:BUTTON,BUTTON,BUTTON,BUTTON,BUTTON",
-      "TEXT_OVERFLOW:DIV"
-    ]
+    "error": "Error: browser.newContext: Target page, context or browser has been closed"
   },
   "Galaxy_Z_Fold_5": {
-    "w": 904,
-    "h": 2316,
-    "issues": [
-      "SMALL_TOUCH:INPUT",
-      "TEXT_OVERFLOW:ASIDE,DIV,BUTTON,BUTTON,BUTTON,BUTTON"
-    ]
+    "error": "Error: browser.newContext: Target page, context or browser has been closed"
   },
   "Asus_Zenbook_Fold": {
-    "w": 1536,
-    "h": 1024,
-    "issues": [
-      "SMALL_TOUCH:BUTTON,BUTTON,BUTTON,BUTTON,BUTTON",
-      "TEXT_OVERFLOW:DIV"
-    ]
+    "error": "Error: browser.newContext: Target page, context or browser has been closed"
   },
   "Galaxy_A51_71": {
-    "w": 412,
-    "h": 915,
-    "issues": [
-      "TEXT_OVERFLOW:DIV,DIV,DIV,BUTTON,SPAN,BUTTON"
-    ]
+    "error": "Error: browser.newContext: Target page, context or browser has been closed"
   },
   "Nest_Hub": {
-    "w": 1024,
-    "h": 600,
-    "issues": [
-      "OFFSCREEN:I,SPAN",
-      "SMALL_TOUCH:INPUT",
-      "TEXT_OVERFLOW:ASIDE,DIV,BUTTON,BUTTON,BUTTON,BUTTON"
-    ]
+    "error": "Error: browser.newContext: Target page, context or browser has been closed"
   },
   "Nest_Hub_Max": {
-    "w": 1280,
-    "h": 800,
-    "issues": [
-      "SMALL_TOUCH:BUTTON,BUTTON,BUTTON,BUTTON,BUTTON",
-      "TEXT_OVERFLOW:DIV"
-    ]
+    "error": "Error: browser.newContext: Target page, context or browser has been closed"
   }
 }

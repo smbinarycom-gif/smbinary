@@ -1,7 +1,7 @@
 
 import React, { useState, useRef } from 'react';
 import { notify } from '../../shared/notify';
-import { PaymentRequest } from '../../shared/types';
+import { PaymentRequest, AdminThemeSettings } from '../../shared/types';
 
 interface WalletPanelProps {
   balance: number;
@@ -10,9 +10,9 @@ interface WalletPanelProps {
   onDeposit: (amount: number, txId: string, proof: string) => void;
   onWithdraw: (amount: number, targetPayId: string) => void;
   onClose?: () => void; // For mobile close
+    theme?: AdminThemeSettings;
 }
-
-const WalletPanel: React.FC<WalletPanelProps> = ({ balance, adminPayId, paymentHistory, onDeposit, onWithdraw, onClose }) => {
+const WalletPanel: React.FC<WalletPanelProps> = ({ balance, adminPayId, paymentHistory, onDeposit, onWithdraw, onClose, theme }) => {
   const [activeTab, setActiveTab] = useState<'OVERVIEW' | 'DEPOSIT' | 'WITHDRAW'>('OVERVIEW');
   
   // Deposit State
@@ -66,13 +66,42 @@ const WalletPanel: React.FC<WalletPanelProps> = ({ balance, adminPayId, paymentH
 
   const sortedHistory = [...paymentHistory].sort((a, b) => b.date - a.date);
 
+    const isLight = theme?.mode === 'LIGHT';
+    // Dark mode: use #1e222d as the main Wallet Overview panel background,
+    // while keeping inner cards slightly elevated and not too cluttered.
+    const shellBg = theme?.backgroundColor || (isLight ? '#f3f4f6' : '#1e222d');
+    const cardBg = theme?.surfaceBackground || (isLight ? '#ffffff' : '#2b3139');
+    const headerBg = theme?.headerBackground || cardBg;
+    const borderColor = isLight ? 'rgba(148,163,184,0.4)' : '#3b414d';
+    const textPrimary = theme?.textColor || (isLight ? '#020617' : '#ffffff');
+    const textMuted = isLight ? '#6b7280' : '#848e9c';
+    const inputBg = isLight ? '#f9fafb' : '#1e2329';
+    const inputBorder = isLight ? 'rgba(148,163,184,0.6)' : '#474d57';
+    const warningBg = isLight ? 'rgba(248,113,113,0.05)' : 'rgba(246,70,93,0.1)';
+    const warningBorder = isLight ? 'rgba(248,113,113,0.35)' : 'rgba(246,70,93,0.2)';
+
   return (
-    <div className="flex flex-col h-full bg-[#1e2329] text-white overflow-hidden font-binance">
+        <div
+            className="flex flex-col h-full overflow-hidden font-binance"
+            style={{ backgroundColor: shellBg, color: textPrimary }}
+        >
       {/* Header */}
-      <div className="flex items-center justify-between p-4 border-b border-[#2b3139] bg-[#1e2329]">
-        <h2 className="text-xl font-bold text-[#fcd535]">Wallet Overview</h2>
+            <div
+                className="flex items-center justify-between p-4 border-b"
+                style={{ backgroundColor: headerBg, borderColor }}
+            >
+                <h2
+                    className="text-xl font-bold"
+                    style={{ color: theme?.primaryColor || (isLight ? '#eab308' : '#fcd535') }}
+                >
+                    Wallet Overview
+                </h2>
         {onClose && (
-            <button onClick={onClose} className="text-[#848e9c] hover:text-white">
+                        <button
+                            onClick={onClose}
+                            className="hover:text-white"
+                            style={{ color: textMuted }}
+                        >
                 <i className="fa-solid fa-xmark text-xl"></i>
             </button>
         )}
@@ -81,29 +110,48 @@ const WalletPanel: React.FC<WalletPanelProps> = ({ balance, adminPayId, paymentH
       <div className="flex-1 overflow-y-auto custom-scrollbar p-4 lg:p-8">
         <div className="max-w-5xl mx-auto space-y-6">
             
-            {/* Balance Card (Binance Style) */}
-            <div className="bg-[#2b3139] p-6 rounded-2xl shadow-lg border border-[#3b414d]">
+                        {/* Balance Card */}
+                        <div
+                            className="p-6 rounded-2xl shadow-lg border"
+                            style={{ backgroundColor: cardBg, borderColor }}
+                        >
                 <div className="flex flex-col md:flex-row justify-between items-start md:items-center space-y-4 md:space-y-0">
                     <div>
-                        <h3 className="text-[#848e9c] text-sm font-bold mb-1">Total Balance</h3>
+                                                <h3 className="text-sm font-bold mb-1" style={{ color: textMuted }}>
+                                                    Total Balance
+                                                </h3>
                         <div className="flex items-end space-x-2">
-                            <span className="text-3xl font-bold text-white tracking-tight">
+                                                        <span className="text-3xl font-bold tracking-tight" style={{ color: textPrimary }}>
                                 {balance.toLocaleString('en-US', { minimumFractionDigits: 2 })}
                             </span>
-                            <span className="text-lg font-bold text-[#848e9c] mb-1">USDT</span>
+                                                        <span className="text-lg font-bold mb-1" style={{ color: textMuted }}>
+                                                            USDT
+                                                        </span>
                         </div>
-                        <p className="text-xs text-[#848e9c] mt-2">≈ {balance.toLocaleString()} USD</p>
+                                                <p className="text-xs mt-2" style={{ color: textMuted }}>
+                                                    ≈ {balance.toLocaleString()} USD
+                                                </p>
                     </div>
                     <div className="flex space-x-3 w-full md:w-auto">
                         <button 
                             onClick={() => setActiveTab('DEPOSIT')}
-                            className={`flex-1 md:flex-none px-8 py-2.5 rounded-lg font-bold text-sm transition-all ${activeTab === 'DEPOSIT' ? 'bg-[#fcd535] text-black' : 'bg-[#fcd535] text-[#1e2329] hover:bg-[#ffe252]'}`}
+                                                        className={`flex-1 md:flex-none px-8 py-2.5 rounded-lg font-bold text-sm transition-all ${
+                                                            activeTab === 'DEPOSIT'
+                                                                ? 'text-black'
+                                                                : 'text-[#1e2329] hover:bg-[#ffe252]'
+                                                        }`}
+                                                        style={{ backgroundColor: theme?.primaryColor || '#fcd535' }}
                         >
                             Deposit
                         </button>
                         <button 
                             onClick={() => setActiveTab('WITHDRAW')}
-                            className={`flex-1 md:flex-none px-8 py-2.5 rounded-lg font-bold text-sm transition-all ${activeTab === 'WITHDRAW' ? 'bg-[#474d57] text-white' : 'bg-[#474d57] text-white hover:bg-[#5e6673]'}`}
+                                                        className={`flex-1 md:flex-none px-8 py-2.5 rounded-lg font-bold text-sm transition-all ${
+                                                            activeTab === 'WITHDRAW'
+                                                                ? 'text-white'
+                                                                : 'text-white hover:bg-[#5e6673]'
+                                                        }`}
+                                                        style={{ backgroundColor: isLight ? '#0f172a' : '#474d57' }}
                         >
                             Withdraw
                         </button>
@@ -112,72 +160,130 @@ const WalletPanel: React.FC<WalletPanelProps> = ({ balance, adminPayId, paymentH
             </div>
 
             {/* Content Area */}
-            <div className="bg-[#2b3139] rounded-2xl shadow-lg border border-[#3b414d] overflow-hidden min-h-[400px]">
+                        <div
+                            className="rounded-2xl shadow-lg border overflow-hidden min-h-[400px]"
+                            style={{ backgroundColor: cardBg, borderColor }}
+                        >
                 
                 {/* DEPOSIT FORM */}
                 {activeTab === 'DEPOSIT' && (
                     <div className="p-6 animate-in fade-in slide-in-from-right-4 duration-300">
-                        <h3 className="text-lg font-bold text-white mb-6 border-b border-[#3b414d] pb-4">Deposit USDT</h3>
+                                                <h3
+                                                    className="text-lg font-bold mb-6 border-b pb-4"
+                                                    style={{ color: textPrimary, borderColor }}
+                                                >
+                                                    Deposit USDT
+                                                </h3>
                         
                         <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
                             <div className="space-y-6">
                                 {/* Admin Pay ID Display */}
-                                <div className="bg-[#1e2329] p-4 rounded-lg border border-[#fcd535]/30">
-                                    <label className="text-xs text-[#848e9c] font-bold uppercase block mb-2">Send Payment To (Binance Pay ID)</label>
+                                                                <div
+                                                                    className="p-4 rounded-lg border"
+                                                                    style={{ backgroundColor: inputBg, borderColor: theme?.primaryColor ? `${theme.primaryColor}55` : '#fcd53555' }}
+                                                                >
+                                                                        <label
+                                                                            className="text-xs font-bold uppercase block mb-2"
+                                                                            style={{ color: textMuted }}
+                                                                        >
+                                                                            Send Payment To (Binance Pay ID)
+                                                                        </label>
                                     <div className="flex items-center justify-between">
-                                        <span className="text-xl font-mono font-bold text-[#fcd535]">{adminPayId || 'CONTACT ADMIN'}</span>
+                                                                                <span
+                                                                                    className="text-xl font-mono font-bold"
+                                                                                    style={{ color: theme?.primaryColor || '#fcd535' }}
+                                                                                >
+                                                                                    {adminPayId || 'CONTACT ADMIN'}
+                                                                                </span>
                                         <button 
                                             onClick={() => navigator.clipboard.writeText(adminPayId)}
-                                            className="text-[#848e9c] hover:text-white"
+                                                                                        className="hover:text-white"
+                                                                                        style={{ color: textMuted }}
                                         >
                                             <i className="fa-regular fa-copy"></i>
                                         </button>
                                     </div>
-                                    <p className="text-[10px] text-[#848e9c] mt-2">
+                                    <p className="text-[10px] mt-2" style={{ color: textMuted }}>
                                         <i className="fa-solid fa-circle-info mr-1"></i>
                                         Only send USDT via Binance Pay. Other methods may be lost.
                                     </p>
                                 </div>
 
                                 <div>
-                                    <label className="block text-sm font-bold text-[#848e9c] mb-2">Amount (USDT)</label>
+                                                                        <label
+                                                                            className="block text-sm font-bold mb-2"
+                                                                            style={{ color: textMuted }}
+                                                                        >
+                                                                            Amount (USDT)
+                                                                        </label>
                                     <div className="relative">
                                         <input 
                                             type="number" 
                                             value={depAmount}
                                             onChange={(e) => setDepAmount(e.target.value)}
-                                            placeholder="Minimum 10 USDT"
-                                            className="w-full bg-[#1e2329] border border-[#474d57] rounded-lg p-3 text-white focus:border-[#fcd535] focus:outline-none"
+                                                                                        placeholder="Minimum 10 USDT"
+                                                                                        className="w-full rounded-lg p-3 focus:outline-none"
+                                                                                        style={{
+                                                                                            backgroundColor: inputBg,
+                                                                                            borderColor: inputBorder,
+                                                                                            color: textPrimary,
+                                                                                        }}
                                         />
-                                        <span className="absolute right-3 top-3 text-sm font-bold text-[#848e9c]">USDT</span>
+                                                                                <span
+                                                                                    className="absolute right-3 top-3 text-sm font-bold"
+                                                                                    style={{ color: textMuted }}
+                                                                                >
+                                                                                    USDT
+                                                                                </span>
                                     </div>
                                 </div>
 
                                 <div>
-                                    <label className="block text-sm font-bold text-[#848e9c] mb-2">Transaction ID (TxID)</label>
+                                                                        <label
+                                                                            className="block text-sm font-bold mb-2"
+                                                                            style={{ color: textMuted }}
+                                                                        >
+                                                                            Transaction ID (TxID)
+                                                                        </label>
                                     <input 
                                         type="text" 
                                         value={txId}
                                         onChange={(e) => setTxId(e.target.value)}
-                                        placeholder="Enter the transaction ID from Binance"
-                                        className="w-full bg-[#1e2329] border border-[#474d57] rounded-lg p-3 text-white focus:border-[#fcd535] focus:outline-none"
+                                                                                placeholder="Enter the transaction ID from Binance"
+                                                                                className="w-full rounded-lg p-3 focus:outline-none"
+                                                                                style={{
+                                                                                    backgroundColor: inputBg,
+                                                                                    borderColor: inputBorder,
+                                                                                    color: textPrimary,
+                                                                                }}
                                     />
                                 </div>
                             </div>
 
                             <div className="space-y-6">
                                 <div>
-                                    <label className="block text-sm font-bold text-[#848e9c] mb-2">Payment Proof (Screenshot)</label>
+                                                                        <label
+                                                                            className="block text-sm font-bold mb-2"
+                                                                            style={{ color: textMuted }}
+                                                                        >
+                                                                            Payment Proof (Screenshot)
+                                                                        </label>
                                     <div 
                                         onClick={() => fileInputRef.current?.click()}
-                                        className="border-2 border-dashed border-[#474d57] rounded-lg h-48 flex flex-col items-center justify-center cursor-pointer hover:border-[#fcd535] hover:bg-[#2a3040] transition-colors relative overflow-hidden"
+                                                                                className="border-2 border-dashed rounded-lg h-48 flex flex-col items-center justify-center cursor-pointer transition-colors relative overflow-hidden"
+                                                                                style={{
+                                                                                    borderColor: inputBorder,
+                                                                                    backgroundColor: isLight ? '#f9fafb' : '#2a3040',
+                                                                                }}
                                     >
                                         {proofFile ? (
                                             <img src={proofFile} alt="proof" className="w-full h-full object-contain" />
                                         ) : (
                                             <>
-                                                <i className="fa-solid fa-cloud-arrow-up text-3xl text-[#848e9c] mb-2"></i>
-                                                <span className="text-sm text-[#848e9c]">Click to upload screenshot</span>
+                                                                                                <i className="fa-solid fa-cloud-arrow-up text-3xl mb-2" style={{ color: textMuted }}></i>
+                                                                                                <span className="text-sm" style={{ color: textMuted }}>
+                                                                                                    Click to upload screenshot
+                                                                                                </span>
                                             </>
                                         )}
                                         <input 
@@ -191,8 +297,20 @@ const WalletPanel: React.FC<WalletPanelProps> = ({ balance, adminPayId, paymentH
                                 </div>
 
                                 <div className="flex space-x-4 pt-4">
-                                    <button onClick={() => setActiveTab('OVERVIEW')} className="flex-1 bg-[#474d57] text-white py-3 rounded-lg font-bold hover:bg-[#5e6673]">Cancel</button>
-                                    <button onClick={submitDeposit} className="flex-1 bg-[#0ecb81] text-white py-3 rounded-lg font-bold hover:bg-[#0aa869]">Confirm Deposit</button>
+                                                                        <button
+                                                                            onClick={() => setActiveTab('OVERVIEW')}
+                                                                            className="flex-1 text-white py-3 rounded-lg font-bold hover:bg-[#5e6673]"
+                                                                            style={{ backgroundColor: isLight ? '#4b5563' : '#474d57' }}
+                                                                        >
+                                                                            Cancel
+                                                                        </button>
+                                                                        <button
+                                                                            onClick={submitDeposit}
+                                                                            className="flex-1 text-white py-3 rounded-lg font-bold hover:bg-[#0aa869]"
+                                                                            style={{ backgroundColor: theme?.accentColor || '#0ecb81' }}
+                                                                        >
+                                                                            Confirm Deposit
+                                                                        </button>
                                 </div>
                             </div>
                         </div>
@@ -202,50 +320,100 @@ const WalletPanel: React.FC<WalletPanelProps> = ({ balance, adminPayId, paymentH
                 {/* WITHDRAW FORM */}
                 {activeTab === 'WITHDRAW' && (
                     <div className="p-6 animate-in fade-in slide-in-from-right-4 duration-300">
-                        <h3 className="text-lg font-bold text-white mb-6 border-b border-[#3b414d] pb-4">Withdraw USDT</h3>
+                                                <h3
+                                                    className="text-lg font-bold mb-6 border-b pb-4"
+                                                    style={{ color: textPrimary, borderColor }}
+                                                >
+                                                    Withdraw USDT
+                                                </h3>
                         
                         <div className="max-w-xl mx-auto space-y-6">
-                            <div className="bg-[#f6465d]/10 border border-[#f6465d]/20 p-4 rounded-lg">
-                                <p className="text-xs text-[#f6465d] font-bold">
+                                                        <div
+                                                            className="p-4 rounded-lg"
+                                                            style={{ backgroundColor: warningBg, borderColor: warningBorder, borderWidth: 1 }}
+                                                        >
+                                                                <p className="text-xs font-bold" style={{ color: isLight ? '#ef4444' : '#f6465d' }}>
                                     <i className="fa-solid fa-triangle-exclamation mr-2"></i>
                                     Ensure your Binance Pay ID is correct. Transactions cannot be reversed.
                                 </p>
                             </div>
 
                             <div>
-                                <label className="block text-sm font-bold text-[#848e9c] mb-2">Your Binance Pay ID</label>
+                                                                <label
+                                                                    className="block text-sm font-bold mb-2"
+                                                                    style={{ color: textMuted }}
+                                                                >
+                                                                    Your Binance Pay ID
+                                                                </label>
                                 <input 
                                     type="text" 
                                     value={userPayId}
                                     onChange={(e) => setUserPayId(e.target.value)}
-                                    placeholder="Enter your Binance Pay ID"
-                                    className="w-full bg-[#1e2329] border border-[#474d57] rounded-lg p-3 text-white focus:border-[#fcd535] focus:outline-none"
+                                                                        placeholder="Enter your Binance Pay ID"
+                                                                        className="w-full rounded-lg p-3 focus:outline-none"
+                                                                        style={{
+                                                                            backgroundColor: inputBg,
+                                                                            borderColor: inputBorder,
+                                                                            color: textPrimary,
+                                                                        }}
                                 />
                             </div>
 
                             <div>
-                                <label className="block text-sm font-bold text-[#848e9c] mb-2">Amount (USDT)</label>
+                                                                <label
+                                                                    className="block text-sm font-bold mb-2"
+                                                                    style={{ color: textMuted }}
+                                                                >
+                                                                    Amount (USDT)
+                                                                </label>
                                 <div className="relative">
                                     <input 
                                         type="number" 
                                         value={wdAmount}
                                         onChange={(e) => setWdAmount(e.target.value)}
-                                        placeholder="Minimum 10 USDT"
-                                        className="w-full bg-[#1e2329] border border-[#474d57] rounded-lg p-3 text-white focus:border-[#fcd535] focus:outline-none"
+                                                                                placeholder="Minimum 10 USDT"
+                                                                                className="w-full rounded-lg p-3 focus:outline-none"
+                                                                                style={{
+                                                                                    backgroundColor: inputBg,
+                                                                                    borderColor: inputBorder,
+                                                                                    color: textPrimary,
+                                                                                }}
                                     />
                                     <div className="absolute right-3 top-3 flex items-center space-x-2">
-                                        <button onClick={() => setWdAmount(balance.toString())} className="text-[10px] text-[#fcd535] font-bold uppercase hover:underline">MAX</button>
-                                        <span className="text-sm font-bold text-[#848e9c]">USDT</span>
+                                                                                <button
+                                                                                    onClick={() => setWdAmount(balance.toString())}
+                                                                                    className="text-[10px] font-bold uppercase hover:underline"
+                                                                                    style={{ color: theme?.primaryColor || '#fcd535' }}
+                                                                                >
+                                                                                    MAX
+                                                                                </button>
+                                                                                <span className="text-sm font-bold" style={{ color: textMuted }}>
+                                                                                    USDT
+                                                                                </span>
                                     </div>
                                 </div>
                                 <div className="flex justify-between mt-1">
-                                    <span className="text-[10px] text-[#848e9c]">Available: {balance.toFixed(2)} USDT</span>
+                                                                        <span className="text-[10px]" style={{ color: textMuted }}>
+                                                                            Available: {balance.toFixed(2)} USDT
+                                                                        </span>
                                 </div>
                             </div>
 
                             <div className="flex space-x-4 pt-4">
-                                <button onClick={() => setActiveTab('OVERVIEW')} className="flex-1 bg-[#474d57] text-white py-3 rounded-lg font-bold hover:bg-[#5e6673]">Cancel</button>
-                                <button onClick={submitWithdraw} className="flex-1 bg-[#fcd535] text-[#1e2329] py-3 rounded-lg font-bold hover:bg-[#ffe252]">Confirm Withdrawal</button>
+                                                                <button
+                                                                    onClick={() => setActiveTab('OVERVIEW')}
+                                                                    className="flex-1 text-white py-3 rounded-lg font-bold hover:bg-[#5e6673]"
+                                                                    style={{ backgroundColor: isLight ? '#4b5563' : '#474d57' }}
+                                                                >
+                                                                    Cancel
+                                                                </button>
+                                                                <button
+                                                                    onClick={submitWithdraw}
+                                                                    className="flex-1 py-3 rounded-lg font-bold hover:bg-[#ffe252]"
+                                                                    style={{ backgroundColor: theme?.primaryColor || '#fcd535', color: '#111827' }}
+                                                                >
+                                                                    Confirm Withdrawal
+                                                                </button>
                             </div>
                         </div>
                     </div>
@@ -254,8 +422,13 @@ const WalletPanel: React.FC<WalletPanelProps> = ({ balance, adminPayId, paymentH
                 {/* OVERVIEW / HISTORY */}
                 {activeTab === 'OVERVIEW' && (
                     <div className="flex flex-col h-full">
-                        <div className="p-4 bg-[#2b3139] border-b border-[#3b414d]">
-                            <h3 className="text-sm font-bold text-white">Recent Transactions</h3>
+                                                <div
+                                                    className="p-4 border-b"
+                                                    style={{ backgroundColor: cardBg, borderColor }}
+                                                >
+                                                        <h3 className="text-sm font-bold" style={{ color: textPrimary }}>
+                                                            Recent Transactions
+                                                        </h3>
                         </div>
                         <div className="overflow-x-auto">
                             <table className="w-full text-left">

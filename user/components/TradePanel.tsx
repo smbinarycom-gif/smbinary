@@ -1,6 +1,6 @@
 
 import React, { useState, useEffect, useRef } from 'react';
-import { Asset } from '../../shared/types';
+import { Asset, AdminThemeSettings } from '../../shared/types';
 import { AssetIcon } from './AssetIcon.tsx';
 
 interface TradePanelProps {
@@ -14,11 +14,28 @@ interface TradePanelProps {
   isMobile?: boolean; // Trigger for Mobile Layout
   selectedTimeFrame: string; // Passed from parent (Chart Timeframe)
   isOTC?: boolean; // New prop for labeling
+    theme?: AdminThemeSettings;
 }
 
 const TradePanel: React.FC<TradePanelProps> = ({ 
-  asset, onTrade, balance, shortcuts = [10, 50, 100, 500], minInvestment = 1, maxInvestment = 1000, activeDurations, isMobile = false, selectedTimeFrame, isOTC = false
+    asset,
+    onTrade,
+    balance,
+    shortcuts = [10, 50, 100, 500],
+    minInvestment = 1,
+    maxInvestment = 1000,
+    activeDurations,
+    isMobile = false,
+    selectedTimeFrame,
+    isOTC = false,
+    theme,
 }) => {
+    const isLight = theme?.mode === 'LIGHT';
+    const cardBg = theme?.surfaceBackground || (isLight ? '#ffffff' : '#1e222d');
+    const subtleBg = theme?.backgroundColor || (isLight ? '#f3f4f6' : '#161a1e');
+    const borderColor = isLight ? 'rgba(148,163,184,0.4)' : '#2a3040';
+    const textPrimary = theme?.textColor || (isLight ? '#020617' : '#ffffff');
+    const textMuted = isLight ? '#6b7280' : '#7d8699';
   const [amount, setAmount] = useState(minInvestment);
   const [durationInSeconds, setDurationInSeconds] = useState(60);
   const [showTimeSelector, setShowTimeSelector] = useState(false);
@@ -46,6 +63,9 @@ const TradePanel: React.FC<TradePanelProps> = ({
 
   const isOutOfRange = amount < minInvestment || amount > maxInvestment;
   const payoutAmount = (amount * (asset.payout / 100) + amount).toFixed(2);
+
+    // Button height: smaller on desktop/tablet, bigger on mobile
+    const tradeButtonHeightClass = isMobile ? 'h-14' : 'h-11';
 
   // Helper: Format Seconds into MM:SS or HH:MM:SS
   const formatTime = (seconds: number) => {
@@ -149,25 +169,48 @@ const TradePanel: React.FC<TradePanelProps> = ({
                   <div className="flex-1 relative" ref={timeSelectorRef}>
                       <button 
                         onClick={() => setShowTimeSelector(!showTimeSelector)}
-                        className={`w-full border rounded-lg h-11 relative flex items-center justify-center transition-colors bg-transparent ${showTimeSelector ? 'border-[#3b82f6] bg-[#2a3040]' : 'border-[#333a4d] active:border-[#3b82f6]'}`}
+                                                className="w-full border rounded-lg h-11 relative flex items-center justify-center transition-colors bg-transparent"
+                                                style={{
+                                                    borderColor: showTimeSelector ? (isLight ? '#3b82f6' : '#3b82f6') : borderColor,
+                                                    backgroundColor: showTimeSelector ? (isLight ? '#e5e7eb' : '#2a3040') : 'transparent',
+                                                }}
                       >
-                          <span className="absolute -top-2 left-3 bg-[#1e2329] px-1 text-[10px] text-[#7d8699]">Time (UTC)</span>
-                          <span className="text-white font-bold text-sm tracking-wide">{getCurrentExpirationTime()}</span>
+                                                    <span
+                                                        className="absolute -top-2 left-3 px-1 text-[10px]"
+                                                        style={{ backgroundColor: cardBg, color: textMuted }}
+                                                    >
+                                                        Time (UTC)
+                                                    </span>
+                                                    <span
+                                                        className="font-bold text-sm tracking-wide"
+                                                        style={{ color: textPrimary }}
+                                                    >
+                                                        {getCurrentExpirationTime()}
+                                                    </span>
                       </button>
 
                       {/* Time Selector Popup Grid */}
-                      {showTimeSelector && (
-                          <div className="absolute bottom-full left-0 w-[280px] mb-2 bg-[#1e222d] border border-[#2a3040] rounded-xl shadow-2xl p-2 z-50 animate-in fade-in zoom-in-95 duration-100">
+                                            {showTimeSelector && (
+                                                    <div
+                                                        className="absolute bottom-full left-0 w-[280px] mb-2 rounded-xl shadow-2xl p-2 z-50 animate-in fade-in zoom-in-95 duration-100 border"
+                                                        style={{ backgroundColor: cardBg, borderColor }}
+                                                    >
                               <div className="grid grid-cols-3 gap-2">
                                   {timeSlots.map((slot, idx) => (
                                       <button
                                           key={idx}
                                           onClick={() => handleTimeSelect(slot.value)}
-                                          className={`py-3 rounded-lg text-sm font-bold font-mono transition-colors ${
-                                              Math.abs(durationInSeconds - slot.value) < 30 // Highlight if close to selected
-                                              ? 'bg-white text-[#1e222d]' 
-                                              : 'bg-[#2a3040] text-[#ccddbb] hover:bg-[#3b414d] hover:text-white'
-                                          }`}
+                                                                                    className="py-3 rounded-lg text-sm font-bold font-mono transition-colors"
+                                                                                    style={{
+                                                                                        backgroundColor:
+                                                                                            Math.abs(durationInSeconds - slot.value) < 30
+                                                                                                ? isLight ? '#0f172a' : '#ffffff'
+                                                                                                : isLight ? '#e5e7eb' : '#2a3040',
+                                                                                        color:
+                                                                                            Math.abs(durationInSeconds - slot.value) < 30
+                                                                                                ? isLight ? '#f9fafb' : '#1e222d'
+                                                                                                : isLight ? '#111827' : '#ccddbb',
+                                                                                    }}
                                       >
                                           {slot.label}
                                       </button>
@@ -178,24 +221,36 @@ const TradePanel: React.FC<TradePanelProps> = ({
                   </div>
 
                   {/* Investment Input Box */}
-                  <div className="flex-1 border border-[#333a4d] rounded-lg h-11 relative flex items-center justify-between px-1 bg-transparent">
-                      <span className="absolute -top-2 left-3 bg-[#1e2329] px-1 text-[10px] text-[#7d8699]">Investment</span>
+                                    <div
+                                        className="flex-1 border rounded-lg h-11 relative flex items-center justify-between px-1 bg-transparent"
+                                        style={{ borderColor, backgroundColor: isLight ? '#f9fafb' : 'transparent' }}
+                                    >
+                                            <span
+                                                className="absolute -top-2 left-3 px-1 text-[10px]"
+                                                style={{ backgroundColor: cardBg, color: textMuted }}
+                                            >
+                                                Investment
+                                            </span>
                       
                       {/* Minus Button (Step: 1) */}
                       <button 
                         onClick={() => adjustAmount(-1)}
-                        className="w-8 h-8 rounded-full bg-[#2a3040] text-[#7d8699] hover:text-white flex items-center justify-center active:scale-90 transition-transform"
+                        className="w-8 h-8 rounded-full flex items-center justify-center active:scale-90 transition-transform"
+                        style={{ backgroundColor: isLight ? '#e5e7eb' : '#2a3040', color: textMuted }}
                       >
                          <i className="fa-solid fa-minus text-[10px]"></i>
                       </button>
                       
                       {/* Value */}
-                      <div className="text-white font-bold text-sm">{amount} $</div>
+                                            <div className="font-bold text-sm" style={{ color: textPrimary }}>
+                                                {amount} $
+                                            </div>
                       
                       {/* Plus Button (Step: 1) */}
                       <button 
                         onClick={() => adjustAmount(1)}
-                        className="w-8 h-8 rounded-full bg-[#2a3040] text-[#7d8699] hover:text-white flex items-center justify-center active:scale-90 transition-transform"
+                        className="w-8 h-8 rounded-full flex items-center justify-center active:scale-90 transition-transform"
+                        style={{ backgroundColor: isLight ? '#e5e7eb' : '#2a3040', color: textMuted }}
                       >
                          <i className="fa-solid fa-plus text-[10px]"></i>
                       </button>
@@ -204,22 +259,34 @@ const TradePanel: React.FC<TradePanelProps> = ({
 
               {/* Payout Text */}
               <div className="text-center mb-2">
-                   <span className="text-[#848e9c] text-xs font-medium mr-2">Payout:</span>
-                   <span className="text-white text-sm font-bold">{payoutAmount} $</span>
+                                     <span className="text-xs font-medium mr-2" style={{ color: textMuted }}>
+                                         Payout:
+                                     </span>
+                                     <span className="text-sm font-bold" style={{ color: textPrimary }}>
+                                         {payoutAmount} $
+                                     </span>
               </div>
 
               {/* Action Buttons */}
               <div className="flex space-x-2">
                   <button 
                     onClick={() => onTrade('CALL', amount, durationInSeconds)} 
-                    className="flex-1 bg-[#00b85e] rounded-lg text-white h-11 font-bold text-lg hover:opacity-90 active:scale-[0.98] transition-all shadow-[0_4px_10px_rgba(0,184,94,0.2)] flex items-center justify-center space-x-2"
+                    className="flex-1 rounded-lg text-white h-11 font-bold text-lg active:scale-[0.98] transition-all flex items-center justify-center space-x-2"
+                    style={{
+                      background: 'linear-gradient(135deg,#22c55e,#16a34a)',
+                      boxShadow: '0 4px 12px rgb(255, 149, 0)',
+                    }}
                   >
                     <i className="fa-solid fa-arrow-up text-sm"></i>
                     <span>BUY</span>
                   </button>
                   <button 
                     onClick={() => onTrade('PUT', amount, durationInSeconds)} 
-                    className="flex-1 bg-[#ff3d3d] rounded-lg text-white h-11 font-bold text-lg hover:opacity-90 active:scale-[0.98] transition-all shadow-[0_4px_10px_rgba(255,61,61,0.2)] flex items-center justify-center space-x-2"
+                    className="flex-1 rounded-lg text-white h-11 font-bold text-lg active:scale-[0.98] transition-all flex items-center justify-center space-x-2"
+                    style={{
+                      background: 'linear-gradient(135deg,#f97373,#ef4444)',
+                      boxShadow: '0 4px 12px rgba(248,113,113,0.35)',
+                    }}
                   >
                     <i className="fa-solid fa-arrow-down text-sm"></i>
                     <span>SELL</span>
@@ -239,24 +306,58 @@ const TradePanel: React.FC<TradePanelProps> = ({
           <div className="flex items-center justify-between px-1">
               <div className="flex items-center space-x-2">
                  <AssetIcon asset={asset} className="mr-0" />
-                 <span className="text-white font-bold text-sm tracking-wide">{asset.symbol}</span>
-                 {isOTC && <span className="text-[#7d8699] text-xs">(OTC)</span>}
+                                 <span
+                                     className="font-bold text-sm tracking-wide"
+                                     style={{ color: textPrimary }}
+                                 >
+                                     {asset.symbol}
+                                 </span>
+                                 {isOTC && (
+                                     <span className="text-xs" style={{ color: textMuted }}>
+                                         (OTC)
+                                     </span>
+                                 )}
               </div>
-              <span className="text-[#7d8699] font-bold text-lg">{asset.payout}%</span>
+                            <span
+                                className="font-bold text-lg"
+                                style={{ color: isLight ? '#0faf59' : '#ffffff' }}
+                            >
+                                {asset.payout}%
+                            </span>
           </div>
 
           {/* Time Input Section (Desktop) */}
-          <div className="bg-[#1e222d] rounded-lg space-y-1 relative" ref={timeSelectorRef}>
+                    <div
+                            className="bg-[#1e222d] rounded-lg space-y-1 relative"
+                            ref={timeSelectorRef}
+                    >
               <div className="flex items-center justify-between px-1">
-                   <label className="text-[#7d8699] text-[11px] font-medium">Time (UTC)</label>
+                                     <label
+                                         className="text-[11px] font-medium"
+                                         style={{ color: textMuted }}
+                                     >
+                                         Time (UTC)
+                                     </label>
               </div>
               
               <button 
                   onClick={() => setShowTimeSelector(!showTimeSelector)}
-                  className={`bg-[#2a3040] rounded-[4px] h-[50px] w-full flex items-center justify-center px-2 border transition-colors group relative ${showTimeSelector ? 'border-[#3b82f6]' : 'border-transparent hover:border-[#3b82f6]'}`}
+                                    className="rounded-[4px] h-[50px] w-full flex items-center justify-center px-2 border transition-colors group relative"
+                                    style={{
+                                        backgroundColor: isLight ? '#e5e7eb' : '#2a3040',
+                                        borderColor: showTimeSelector ? '#3b82f6' : 'transparent',
+                                    }}
               >
-                   <span className="text-white text-xl font-bold tracking-wider font-binance">{getCurrentExpirationTime()}</span>
-                   <i className="fa-regular fa-clock text-[#7d8699] absolute right-4 text-xs"></i>
+                                     <span
+                                         className="text-xl font-bold tracking-wider font-binance"
+                                         style={{ color: textPrimary }}
+                                     >
+                                         {getCurrentExpirationTime()}
+                                     </span>
+                                     <i
+                                         className="fa-regular fa-clock absolute right-4 text-xs"
+                                         style={{ color: textMuted }}
+                                     ></i>
               </button>
 
               {/* Time Selector Popup Grid (Desktop) */}
@@ -282,7 +383,7 @@ const TradePanel: React.FC<TradePanelProps> = ({
           </div>
 
           {/* Investment Input Section */}
-          <div className="bg-[#1e222d] rounded-lg space-y-1 mt-2">
+				  <div className="bg-[#1e222d] rounded-lg space-y-1 mt-2">
               <div className="flex items-center justify-between px-1">
                    <label className="text-[#7d8699] text-[11px] font-medium">Investment</label>
               </div>
@@ -314,12 +415,12 @@ const TradePanel: React.FC<TradePanelProps> = ({
           </div>
 
           {/* Trade Buttons Stack */}
-          <div className="flex flex-col space-y-3 mt-4">
+          <div className="flex flex-col space-y-1 mt-4">
              {/* Buy Button */}
-             <button 
-                disabled={isOutOfRange}
-                onClick={() => onTrade('CALL', amount, durationInSeconds)}
-                className={`w-full bg-[#00b85e] hover:bg-[#00a352] text-white rounded-[4px] h-14 flex items-center justify-between px-4 shadow-[0_4px_10px_rgba(0,184,94,0.3)] active:scale-[0.99] transition-all relative overflow-hidden group ${isOutOfRange ? 'opacity-50 cursor-not-allowed' : ''}`}
+                 <button 
+                     disabled={isOutOfRange}
+                     onClick={() => onTrade('CALL', amount, durationInSeconds)}
+                     className={`w-full bg-[#00b85e] hover:bg-[#00a352] text-white rounded-[4px] ${tradeButtonHeightClass} flex items-center justify-between px-4 shadow-[0_4px_10px_rgba(0,184,94,0.3)] active:scale-[0.99] transition-all relative overflow-hidden group ${isOutOfRange ? 'opacity-50 cursor-not-allowed' : ''}`}
              >
                  <div className="flex flex-col items-start z-10">
                     <span className="text-lg font-bold uppercase tracking-wider">Buy</span>
@@ -329,17 +430,17 @@ const TradePanel: React.FC<TradePanelProps> = ({
              </button>
 
              {/* Payout Info Text */}
-             <div className="flex justify-center items-center py-1">
-                 <p className="text-[#ccddbb] text-sm font-medium">
+             <div className="flex justify-center items-center py-0">
+                 <p className="text-[#ccddbb] text-sm font-medium leading-tight">
                     Your payout: <span className="font-bold text-white text-base">{payoutAmount} $</span>
                  </p>
              </div>
 
              {/* Sell Button */}
-             <button 
-                disabled={isOutOfRange}
-                onClick={() => onTrade('PUT', amount, durationInSeconds)}
-                className={`w-full bg-[#ff3d3d] hover:bg-[#e63737] text-white rounded-[4px] h-14 flex items-center justify-between px-4 shadow-[0_4px_10px_rgba(255,61,61,0.3)] active:scale-[0.99] transition-all relative overflow-hidden group ${isOutOfRange ? 'opacity-50 cursor-not-allowed' : ''}`}
+                 <button 
+                     disabled={isOutOfRange}
+                     onClick={() => onTrade('PUT', amount, durationInSeconds)}
+                     className={`w-full bg-[#ff3d3d] hover:bg-[#e63737] text-white rounded-[4px] ${tradeButtonHeightClass} flex items-center justify-between px-4 shadow-[0_4px_10px_rgba(255,61,61,0.3)] active:scale-[0.99] transition-all relative overflow-hidden group ${isOutOfRange ? 'opacity-50 cursor-not-allowed' : ''}`}
              >
                  <div className="flex flex-col items-start z-10">
                     <span className="text-lg font-bold uppercase tracking-wider">Sell</span>

@@ -55,7 +55,7 @@ const OptionsTradingHomePage: React.FC<OptionsTradingHomePageProps> = ({
               <span className="text-lg font-black text-slate-950">GX</span>
             </div>
             <div className="hidden flex-col text-xs font-semibold text-slate-300 sm:flex">
-              <span className="text-sm font-black tracking-tight text-white">GeminiX</span>
+              <span className="text-sm font-black tracking-tight text-white">SMBinary.COM</span>
               <span className="text-[10px] uppercase tracking-[0.25em] text-emerald-300/80">Options Trading</span>
             </div>
           </div>
@@ -415,7 +415,7 @@ const OptionsTradingHomePage: React.FC<OptionsTradingHomePageProps> = ({
             <div className="flex-1 flex justify-center lg:justify-start">
               <div className="h-72 w-36 rounded-[2rem] border border-slate-700 bg-gradient-to-b from-slate-900 via-slate-950 to-slate-900 p-4 shadow-[0_28px_70px_rgba(15,23,42,1)]">
                 <div className="mb-3 flex items-center justify-between text-[10px] text-slate-300">
-                  <span className="font-semibold">GeminiX App</span>
+                  <span className="font-semibold">SMBinary.COM App</span>
                   <span className="rounded-full bg-emerald-500/10 px-2 py-0.5 text-emerald-300">Online</span>
                 </div>
                 <div className="h-40 rounded-2xl bg-slate-900/80 p-2">
@@ -502,7 +502,7 @@ const OptionsTradingHomePage: React.FC<OptionsTradingHomePageProps> = ({
                 <div className="flex h-8 w-8 items-center justify-center rounded-xl bg-gradient-to-br from-emerald-400 to-cyan-500">
                   <span className="text-sm font-black text-slate-950">GX</span>
                 </div>
-                <span className="text-sm font-bold text-white">GeminiX</span>
+                <span className="text-sm font-bold text-white">SMBinary.COM</span>
               </div>
               <p className="text-xs text-slate-500">
                 A simulated options-style trading interface created for practice and educational scenarios.

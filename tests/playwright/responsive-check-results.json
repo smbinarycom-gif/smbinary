@@ -3,63 +3,95 @@
     "width": 320,
     "height": 568,
     "issues": [
-      "OFFSCREEN_ELEMENTS: DIV.text-center.space-y-2, DIV.inline-block.px-4, SPAN.text-[10px].font-black, H1.text-5xl.lg:text-7xl, SPAN.text-[#8b5cf6]"
+      "OFFSCREEN_ELEMENTS: DIV.mt-4.grid, DIV.rounded-2xl.bg-slate-900/90, DIV.flex.items-center, SPAN.text-slate-400, SPAN.rounded-full.bg-emerald-500/10",
+      "SMALL_TOUCH_TARGETS: A.hover:text-emerald-300, A.hover:text-emerald-300, A.hover:text-emerald-300, A.hover:text-emerald-300, A.block.text-slate-300",
+      "TEXT_OVERFLOW: DIV.flex-1.space-y-6, DIV.space-y-3.sm:space-y-2, BUTTON.w-full.sm:w-auto, DIV.mt-4.flex, BUTTON.rounded-full.bg-slate-800, BUTTON.mt-3.inline-flex"
     ]
   },
   "iPhone_12": {
     "width": 390,
     "height": 664,
     "issues": [
-      "OFFSCREEN_ELEMENTS: DIV.text-center.space-y-2, DIV.inline-block.px-4, SPAN.text-[10px].font-black, H1.text-5xl.lg:text-7xl, SPAN.text-[#8b5cf6]"
+      "OFFSCREEN_ELEMENTS: P.mt-1.text-[10px], DIV.mt-4.flex, DIV.flex.items-center, SPAN.inline-flex.h-6, I.fa-solid.fa-arrow-trend-up",
+      "SMALL_TOUCH_TARGETS: A.hover:text-emerald-300, A.hover:text-emerald-300, A.hover:text-emerald-300, A.hover:text-emerald-300, A.block.text-slate-300",
+      "TEXT_OVERFLOW: DIV.flex-1.space-y-6, DIV.space-y-3.sm:space-y-2, BUTTON.w-full.sm:w-auto, DIV.mt-4.flex, BUTTON.rounded-full.bg-slate-800, BUTTON.mt-3.inline-flex"
     ]
   },
   "Pixel_5": {
     "width": 393,
     "height": 727,
     "issues": [
-      "OFFSCREEN_ELEMENTS: DIV.inline-block.px-4, SPAN.text-[10px].font-black, DIV.flex.items-center, DIV.w-1.5.h-1.5, SPAN.text-[9px].font-black"
+      "OFFSCREEN_ELEMENTS: I.fa-solid.fa-arrow-trend-up, P.text-[10px].text-slate-400, SECTION#about.border-b.border-slate-800/80, DIV.mx-auto.max-w-6xl, DIV.mx-auto.max-w-3xl",
+      "SMALL_TOUCH_TARGETS: A.hover:text-emerald-300, A.hover:text-emerald-300, A.hover:text-emerald-300, A.hover:text-emerald-300, A.block.text-slate-300",
+      "TEXT_OVERFLOW: DIV.flex-1.space-y-6, DIV.space-y-3.sm:space-y-2, BUTTON.w-full.sm:w-auto, DIV.mt-4.flex, BUTTON.rounded-full.bg-slate-800, BUTTON.mt-3.inline-flex"
     ]
   },
   "Galaxy_S20": {
     "width": 1280,
     "height": 720,
-    "issues": []
+    "issues": [
+      "OFFSCREEN_ELEMENTS: DIV.mt-8.grid, ARTICLE.group.flex, DIV.mb-4.inline-flex, I.fa-solid.fa-display, H3.text-sm.sm:text-base",
+      "SMALL_TOUCH_TARGETS: A.hover:text-emerald-300.transition-colors, A.hover:text-emerald-300.transition-colors, A.hover:text-emerald-300.transition-colors, A.hover:text-emerald-300.transition-colors, BUTTON.rounded-full.border"
+    ]
   },
   "iPad_gen7": {
     "width": 810,
     "height": 1080,
-    "issues": []
+    "issues": [
+      "OFFSCREEN_ELEMENTS: BUTTON.mt-3.inline-flex, I.fa-solid.fa-arrow-right, BUTTON.mt-3.inline-flex, I.fa-solid.fa-arrow-right, ARTICLE.group.flex",
+      "SMALL_TOUCH_TARGETS: A.hover:text-emerald-300.transition-colors, A.hover:text-emerald-300.transition-colors, A.hover:text-emerald-300.transition-colors, A.hover:text-emerald-300.transition-colors, A.hover:text-emerald-300",
+      "TEXT_OVERFLOW: DIV.hidden.items-center, BUTTON.rounded-full.border, BUTTON.rounded-full.bg-emerald-500, BUTTON.inline-flex.items-center, BUTTON.w-full.sm:w-auto, DIV.mt-4.flex"
+    ]
   },
   "Desktop_1366x768": {
     "width": 1366,
     "height": 768,
-    "issues": []
+    "issues": [
+      "OFFSCREEN_ELEMENTS: H3.text-sm.sm:text-base, P.mt-1.flex-1, BUTTON.mt-3.inline-flex, I.fa-solid.fa-arrow-right, H3.text-sm.sm:text-base",
+      "SMALL_TOUCH_TARGETS: A.hover:text-emerald-300.transition-colors, A.hover:text-emerald-300.transition-colors, A.hover:text-emerald-300.transition-colors, A.hover:text-emerald-300.transition-colors, BUTTON.rounded-full.border"
+    ]
   },
   "SmallPhone_320x568": {
     "width": 320,
     "height": 568,
     "issues": [
-      "OFFSCREEN_ELEMENTS: DIV.text-center.space-y-2, DIV.inline-block.px-4, SPAN.text-[10px].font-black, H1.text-5xl.lg:text-7xl, SPAN.text-[#8b5cf6]"
+      "OFFSCREEN_ELEMENTS: DIV.mt-4.grid, DIV.rounded-2xl.bg-slate-900/90, DIV.flex.items-center, SPAN.text-slate-400, SPAN.rounded-full.bg-emerald-500/10",
+      "SMALL_TOUCH_TARGETS: A.hover:text-emerald-300, A.hover:text-emerald-300, A.hover:text-emerald-300, A.hover:text-emerald-300, A.block.text-slate-300",
+      "TEXT_OVERFLOW: DIV.flex-1.space-y-6, DIV.space-y-3.sm:space-y-2, BUTTON.w-full.sm:w-auto, DIV.mt-4.flex, BUTTON.rounded-full.bg-slate-800, BUTTON.mt-3.inline-flex"
     ]
   },
   "LargePhone_412x915": {
     "width": 412,
     "height": 915,
-    "issues": []
+    "issues": [
+      "OFFSCREEN_ELEMENTS: DIV.mt-8.grid, ARTICLE.group.flex, DIV.mb-4.inline-flex, I.fa-solid.fa-display, H3.text-sm.sm:text-base",
+      "SMALL_TOUCH_TARGETS: A.hover:text-emerald-300, A.hover:text-emerald-300, A.hover:text-emerald-300, A.hover:text-emerald-300, A.block.text-slate-300",
+      "TEXT_OVERFLOW: DIV.flex-1.space-y-6, DIV.space-y-3.sm:space-y-2, BUTTON.w-full.sm:w-auto, DIV.mt-4.flex, BUTTON.rounded-full.bg-slate-800, BUTTON.mt-3.inline-flex"
+    ]
   },
   "Tablet_768x1024": {
     "width": 768,
     "height": 1024,
-    "issues": []
+    "issues": [
+      "OFFSCREEN_ELEMENTS: P.mt-1.flex-1, BUTTON.mt-3.inline-flex, I.fa-solid.fa-arrow-right, P.mt-1.flex-1, BUTTON.mt-3.inline-flex",
+      "SMALL_TOUCH_TARGETS: A.hover:text-emerald-300.transition-colors, A.hover:text-emerald-300.transition-colors, A.hover:text-emerald-300.transition-colors, A.hover:text-emerald-300.transition-colors, A.hover:text-emerald-300",
+      "TEXT_OVERFLOW: DIV.hidden.items-center, BUTTON.rounded-full.border, BUTTON.rounded-full.bg-emerald-500, BUTTON.inline-flex.items-center, BUTTON.w-full.sm:w-auto, DIV.mt-4.flex"
+    ]
   },
   "Desktop_1440x900": {
     "width": 1440,
     "height": 900,
-    "issues": []
+    "issues": [
+      "OFFSCREEN_ELEMENTS: ARTICLE.group.flex, DIV.mb-4.inline-flex, I.fa-solid.fa-headset, H3.text-sm.sm:text-base, P.mt-1.flex-1",
+      "SMALL_TOUCH_TARGETS: A.hover:text-emerald-300.transition-colors, A.hover:text-emerald-300.transition-colors, A.hover:text-emerald-300.transition-colors, A.hover:text-emerald-300.transition-colors, BUTTON.rounded-full.border"
+    ]
   },
   "Desktop_1920x1080": {
     "width": 1920,
     "height": 1080,
-    "issues": []
+    "issues": [
+      "OFFSCREEN_ELEMENTS: BUTTON.mt-3.inline-flex, I.fa-solid.fa-arrow-right, BUTTON.mt-3.inline-flex, I.fa-solid.fa-arrow-right, BUTTON.mt-3.inline-flex",
+      "SMALL_TOUCH_TARGETS: A.hover:text-emerald-300.transition-colors, A.hover:text-emerald-300.transition-colors, A.hover:text-emerald-300.transition-colors, A.hover:text-emerald-300.transition-colors, BUTTON.rounded-full.border"
+    ]
   }
 }

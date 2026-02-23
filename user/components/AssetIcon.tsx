@@ -48,7 +48,7 @@ export const AssetIcon: React.FC<AssetIconProps> = ({ asset, className = "" }) =
       <div className={`relative w-9 h-6 ${className} flex-shrink-0`}>
         <img 
             src={`https://assets.coincap.io/assets/icons/${base.toLowerCase()}@2x.png`} 
-            className="w-6 h-6 absolute top-0 left-0 z-10 rounded-full bg-white ring-2 ring-[#1e222d]"
+            className="w-6 h-6 absolute top-0 left-0 z-10 rounded-full bg-white ring-2 ring-[#f3f4f6]"
             onError={(e) => (e.currentTarget.src = 'https://upload.wikimedia.org/wikipedia/commons/4/46/Bitcoin.svg')} 
             alt={base}
         />
@@ -73,13 +73,13 @@ export const AssetIcon: React.FC<AssetIconProps> = ({ asset, className = "" }) =
         {/* Base Currency Flag (Front) */}
         <img 
             src={`https://flagcdn.com/w40/${baseFlag}.png`} 
-            className="w-6 h-6 absolute top-0 left-0 z-10 rounded-full object-cover bg-[#1e222d] ring-2 ring-[#1e222d]"
+            className="w-6 h-6 absolute top-0 left-0 z-10 rounded-full object-cover bg-white ring-2 ring-[#f3f4f6]"
             alt={base}
         />
         {/* Quote Currency Flag (Back) */}
         <img 
             src={`https://flagcdn.com/w40/${quoteFlag}.png`} 
-            className="w-6 h-6 absolute top-0 right-0 z-0 rounded-full object-cover opacity-80 bg-[#1e222d]"
+            className="w-6 h-6 absolute top-0 right-0 z-0 rounded-full object-cover opacity-80 bg-[#f3f4f6]"
             alt={quote}
         />
       </div>

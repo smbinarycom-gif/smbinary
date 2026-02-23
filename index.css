@@ -208,5 +208,28 @@ button{
 .floating-deposit:active{transform:scale(.98)}
 
 
+/* RGB glow strip for System Settings cards */
+.setting-card-rgb{position:relative}
+.setting-card-rgb::before{
+  content:"";
+  position:absolute;
+  left:-1px;
+  top:10px;
+  bottom:10px;
+  width:4px;
+  border-radius:9999px;
+  background:linear-gradient(180deg,#ff0080,#ffcd1e,#00f0ff,#4f46e5,#ff0080);
+  background-size:400% 400%;
+  animation:rgbGlow 4s ease-in-out infinite;
+  box-shadow:0 0 14px rgba(79,70,229,.65);
+}
+
+@keyframes rgbGlow{
+  0%{background-position:0% 0%;opacity:.9}
+  50%{background-position:100% 100%;opacity:1}
+  100%{background-position:0% 0%;opacity:.9}
+}
+
+
 
 
