@@ -2,9 +2,7 @@ import React, { useState } from 'react';
 
 type Props = { onSuccess: () => void };
 
-// DEV-only credentials (temporary). REMOVE before production.
-const DEV_ADMIN_EMAIL = 'smbinary.com@gmail.com';
-const DEV_ADMIN_PASSWORD = 'admin123';
+
 
 const AdminLogin: React.FC<Props> = ({ onSuccess }) => {
   const [email, setEmail] = useState('');
@@ -13,19 +11,39 @@ const AdminLogin: React.FC<Props> = ({ onSuccess }) => {
   const [show, setShow] = useState(false);
   const [remember, setRemember] = useState(false);
 
-  const submit = (e: React.FormEvent) => {
+  const submit = async (e: React.FormEvent) => {
     e.preventDefault();
     setErr('');
     if (!email || !password) {
       setErr('Enter email and password');
       return;
     }
-    if (email.trim().toLowerCase() === DEV_ADMIN_EMAIL && password === DEV_ADMIN_PASSWORD) {
+    try {
+      // Supabase sign in
+      const { data, error } = await (await import('../supabaseClient')).supabase.auth.signInWithPassword({ email, password });
+      if (error || !data.user) {
+        setErr('Invalid credentials');
+        return;
+      }
+      // Check user role from users table
+      const { data: userData, error: userError } = await (await import('../supabaseClient')).supabase
+        .from('users')
+        .select('role')
+        .eq('id', data.user.id)
+        .single();
+      if (userError || !userData) {
+        setErr('Could not verify user role.');
+        return;
+      }
+      if (userData.role !== 'admin') {
+        setErr('Access denied: Not an admin.');
+        return;
+      }
       if (remember) localStorage.setItem('admin_auth', '1');
       onSuccess();
-      return;
+    } catch (err) {
+      setErr('Unexpected error. Please try again.');
     }
-    setErr('Invalid credentials');
   };
 
   return (
@@ -72,14 +90,14 @@ const AdminLogin: React.FC<Props> = ({ onSuccess }) => {
                 <label className="inline-flex items-center text-sm text-slate-600">
                 <input type="checkbox" checked={remember} onChange={e => setRemember(e.target.checked)} className="mr-2" /> Remember me
               </label>
-              <button type="button" onClick={() => { setEmail(DEV_ADMIN_EMAIL); setPassword(DEV_ADMIN_PASSWORD); }} className="text-sm text-indigo-600">Fill dev creds</button>
+              {/* <button type="button" onClick={() => { setEmail(DEV_ADMIN_EMAIL); setPassword(DEV_ADMIN_PASSWORD); }} className="text-sm text-indigo-600">Fill dev creds</button> */}
             </div>
 
             <div>
               <button type="submit" className="w-full py-2 rounded-lg bg-indigo-600 text-white font-semibold hover:bg-indigo-700">Sign in</button>
             </div>
 
-            <div className="pt-2 text-xs text-slate-500 text-center">Developer fallback login — replace with server auth before production.</div>
+            {/* <div className="pt-2 text-xs text-slate-500 text-center">Developer fallback login — replace with server auth before production.</div> */}
           </form>
         </div>
       </div>
