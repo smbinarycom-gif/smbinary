@@ -34,6 +34,12 @@ import AffiliatesListTab from './affiliate/tabs/AffiliatesListTab.tsx';
 import CommissionPlansTab from './affiliate/tabs/CommissionPlansTab.tsx';
 import PlaceholderTab from './affiliate/tabs/PlaceholderTab.tsx';
 import ReferralTrackingPage from './affiliate/referralTracking/ReferralTrackingPage.tsx';
+import PerformanceReports from './affiliate/PerformanceReports.tsx';
+import PromoMaterials from './affiliate/PromoMaterials.tsx';
+import PayoutManagement from './affiliate/PayoutManagement.tsx';
+import FraudDetection from './affiliate/FraudDetection.tsx';
+import AffiliateSettingsPage from './affiliate/AffiliateSettings.tsx';
+import AdminLogin from './AdminLogin.tsx';
 import type { UserFilterType } from './userFilters.ts';
 import { filterUsersByType } from './userFilters.ts';
 
@@ -89,6 +95,8 @@ const AdminPanel: React.FC<AdminPanelProps> = ({ settings, onUpdate, trades, use
         const [commissionHistory, setCommissionHistory] = useState<CommissionHistoryEntry[]>([]);
     const [activeMenu, setActiveMenu] = useState<MenuType>('DASHBOARD');
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
+    // Always require login on panel entry (dev fallback). Do not auto-trust localStorage.
+    const [isAuthenticated, setIsAuthenticated] = useState<boolean>(false);
   const [selectedUser, setSelectedUser] = useState<User | null>(null);
   const [selectedProof, setSelectedProof] = useState<string | null>(null);
         const [currentTime, setCurrentTime] = useState<string>('');
@@ -144,6 +152,8 @@ const AdminPanel: React.FC<AdminPanelProps> = ({ settings, onUpdate, trades, use
         }
     }
   };
+
+    
 
   // --- ANALYTICS CALCULATIONS ---
     const totalVolume = useMemo(() => trades.reduce((acc, t) => acc + t.amount, 0), [trades]);
@@ -204,6 +214,7 @@ const AdminPanel: React.FC<AdminPanelProps> = ({ settings, onUpdate, trades, use
         transactions: paymentRequests.filter(p => p.transactionId?.toLowerCase().includes(lower) || p.userName.toLowerCase().includes(lower) || p.id.includes(lower)),
         assets: assets.filter(a => a.symbol.toLowerCase().includes(lower) || a.name.toLowerCase().includes(lower))
     };
+    
   }, [globalSearch, users, paymentRequests, assets]);
 
   const handleUpdateUser = (updatedUser: User) => {
@@ -325,6 +336,15 @@ const AdminPanel: React.FC<AdminPanelProps> = ({ settings, onUpdate, trades, use
         const themedSidebarStyle: CSSProperties = { backgroundColor: theme.sidebarBackground };
         const themedHeaderStyle: CSSProperties = { backgroundColor: theme.headerBackground };
         const themedMainStyle: CSSProperties = { backgroundColor: theme.backgroundColor };
+
+    // If not authenticated show the dev login fallback
+    if (!isAuthenticated) {
+        return (
+            <div className="min-h-screen flex items-center justify-center bg-gray-50 p-4">
+                <AdminLogin onSuccess={() => setIsAuthenticated(true)} />
+            </div>
+        );
+    }
 
     return (
         <div
@@ -571,7 +591,7 @@ const AdminPanel: React.FC<AdminPanelProps> = ({ settings, onUpdate, trades, use
                                 }`}
                             >
                                 <button
-                                    onClick={() => window.location.reload()}
+                                    onClick={() => { localStorage.removeItem('admin_auth'); setIsAuthenticated(false); setIsProfileOpen(false); }}
                                     className={`w-full text-left px-4 py-3 text-xs font-bold hover:bg-opacity-80 ${
                                         isLight ? 'text-[#f6465d] hover:bg-[#f3f4f6]' : 'text-[#f6465d] hover:bg-[#2b3139]'
                                     }`}
@@ -692,49 +712,28 @@ const AdminPanel: React.FC<AdminPanelProps> = ({ settings, onUpdate, trades, use
 
                     {activeMenu === 'AFFILIATE_REFERRALS' && (
                         <React.Suspense fallback={<div>Loading...</div>}>
-                            {/** রেফারাল ট্র্যাকিং ফিচার পেজ */}
                             <ReferralTrackingPage />
                         </React.Suspense>
                     )}
 
                     {activeMenu === 'AFFILIATE_PAYOUTS' && (
-                        <PlaceholderTab
-                            title="Payout Management"
-                            description="Review and process affiliate payout requests, methods, and statuses."
-                            theme={theme}
-                        />
+                        <PayoutManagement />
                     )}
 
                     {activeMenu === 'AFFILIATE_PROMO' && (
-                        <PlaceholderTab
-                            title="Promo Materials"
-                            description="Upload and manage banners, landing pages, and shareable campaign links for affiliates."
-                            theme={theme}
-                        />
+                        <PromoMaterials />
                     )}
 
                     {activeMenu === 'AFFILIATE_REPORTS' && (
-                        <PlaceholderTab
-                            title="Performance Reports"
-                            description="Analyze affiliate earnings, conversions, and leaderboards with export-ready reports."
-                            theme={theme}
-                        />
+                        <PerformanceReports />
                     )}
 
                     {activeMenu === 'AFFILIATE_FRAUD' && (
-                        <PlaceholderTab
-                            title="Fraud Detection"
-                            description="Investigate self-referrals, duplicate IPs, and suspicious activity across the affiliate program."
-                            theme={theme}
-                        />
+                        <FraudDetection />
                     )}
 
                     {activeMenu === 'AFFILIATE_SETTINGS' && (
-                        <PlaceholderTab
-                            title="Affiliate Settings"
-                            description="Control global affiliate rules like cookie duration, minimum payout, and terms & conditions."
-                            theme={theme}
-                        />
+                        <AffiliateSettingsPage />
                     )}
 
                     {activeMenu === 'TRADING' && (

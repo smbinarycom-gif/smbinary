@@ -84,7 +84,7 @@ const ReferralTrackingPage: React.FC = () => {
   return (
     <div className="rounded-lg border bg-white p-6 text-gray-800 shadow">
       <div className="flex items-center justify-between mb-6">
-        <h1 className="text-2xl font-bold">রেফারাল ট্র্যাকিং</h1>
+        <h1 className="text-2xl font-bold">Referral Tracking</h1>
         <div className="space-x-2">
           <button onClick={downloadCSV} className="bg-blue-600 text-white px-3 py-1 rounded text-sm">Export CSV</button>
         </div>
