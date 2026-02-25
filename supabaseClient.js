@@ -1,6 +1,13 @@
 import { createClient } from '@supabase/supabase-js'
 
-const supabaseUrl = "https://mkrwwrctlchdpbhiwlsk.supabase.co"
-const supabaseKey = "sb_publishable_KtFuFVWO7D1GVBMfxd7cVw_BV2k1ylt"
+// Use only public, frontend-safe Vite env vars here
+const supabaseUrl = import.meta.env.VITE_SUPABASE_URL || 'http://localhost';
+const supabaseKey = import.meta.env.VITE_SUPABASE_ANON_KEY || 'anon';
 
-export const supabase = createClient(supabaseUrl, supabaseKey)
+// Log values in dev to help diagnose blank-screen issues (safe public values)
+if (import.meta.env.DEV) {
+	// eslint-disable-next-line no-console
+	console.debug('supabaseClient: VITE_SUPABASE_URL=', supabaseUrl, ' VITE_SUPABASE_ANON_KEY=', supabaseKey ? 'present' : 'missing');
+}
+
+export const supabase = createClient(supabaseUrl, supabaseKey);

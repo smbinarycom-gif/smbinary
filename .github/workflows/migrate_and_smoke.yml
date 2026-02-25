@@ -1,0 +1,61 @@
+name: Migrate & Smoke Test
+
+on:
+  workflow_dispatch: {}
+
+jobs:
+  migrate_and_smoke:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install PostgreSQL client and jq
+        run: sudo apt-get update && sudo apt-get install -y postgresql-client jq curl
+
+      - name: Create CI auth user (if needed) and insert public.users row
+        env:
+          SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
+          SUPABASE_SERVICE_KEY: ${{ secrets.SUPABASE_SERVICE_KEY }}
+          DATABASE_URL: ${{ secrets.DATABASE_URL }}
+        run: |
+          set -euo pipefail
+          echo "Creating Supabase auth user via Admin API..."
+          EMAIL="ci-$(date +%s)@example.com"
+          PASSWORD="ChangeMe123!"
+          RESP=$(curl -s -X POST "${SUPABASE_URL}/auth/v1/admin/users" \
+            -H "apikey: ${SUPABASE_SERVICE_KEY}" \
+            -H "Authorization: Bearer ${SUPABASE_SERVICE_KEY}" \
+            -H "Content-Type: application/json" \
+            -d "{\"email\":\"${EMAIL}\",\"password\":\"${PASSWORD}\"}")
+          USER_ID=$(echo "$RESP" | jq -r .id)
+          if [ -z "$USER_ID" ] || [ "$USER_ID" = "null" ]; then
+            echo "Failed to create auth user; response:" >&2
+            echo "$RESP" >&2
+            exit 1
+          fi
+          echo "Auth user id: $USER_ID"
+          echo "Inserting into public.users..."
+          psql "$DATABASE_URL" -v ON_ERROR_STOP=1 -c "INSERT INTO public.users (id,balance) VALUES ('$USER_ID'::uuid,0) ON CONFLICT (id) DO NOTHING;"
+
+      - name: Run migrations
+        env:
+          DATABASE_URL: ${{ secrets.DATABASE_URL }}
+        run: bash scripts/run_all_migrations.sh
+
+      - name: Smoke test (create txn, process, verify)
+        env:
+          DATABASE_URL: ${{ secrets.DATABASE_URL }}
+        run: |
+          set -euo pipefail
+          echo "Finding CI user id..."
+          USER_ID=$(psql "$DATABASE_URL" -t -A -c "SELECT id FROM public.users ORDER BY created_at DESC LIMIT 1;")
+          echo "Using user: $USER_ID"
+          echo "Creating txn via helper..."
+          TXN_ID=$(psql "$DATABASE_URL" -t -A -c "SELECT public.create_transaction_with_audit('$USER_ID'::uuid,'DEPOSIT'::public.txn_type,'manual',100.00,'USD','ci-ref-1','{}'::jsonb,NULL);")
+          echo "Txn id: $TXN_ID"
+          echo "Processing txn..."
+          psql "$DATABASE_URL" -v ON_ERROR_STOP=1 -c "SELECT public.process_transaction_update('$TXN_ID'::uuid,'COMPLETED'::public.txn_status,NULL::uuid,'{}'::jsonb);"
+          echo "Verifying results..."
+          psql "$DATABASE_URL" -c "SELECT status,balance_before,balance_after FROM public.transactions WHERE id='$TXN_ID'::uuid;"
+          psql "$DATABASE_URL" -c "SELECT balance FROM public.users WHERE id='$USER_ID'::uuid;"
+          psql "$DATABASE_URL" -c "SELECT * FROM public.transaction_audit WHERE transaction_id='$TXN_ID' ORDER BY created_at DESC LIMIT 5;"

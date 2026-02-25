@@ -1,5 +1,6 @@
 
 import React, { useState, useMemo, useEffect, type CSSProperties } from 'react';
+import { useSiteConfig } from '../shared/siteConfig';
 import { MarketSettings, Trade, User, Asset, PaymentRequest } from '../shared/types.ts';
 
 // Import Components
@@ -19,6 +20,7 @@ import DepositsMenu from './components/DepositsMenu.tsx';
 import WithdrawalsMenu from './components/WithdrawalsMenu';
 import AffiliateMenu from './components/AffiliateMenu.tsx';
 import NotificationComposer from './components/NotificationComposer';
+import RealtimeTransactions from './components/RealtimeTransactions';
 import AllDeposits from './tabs/deposits/AllDeposits.tsx';
 import PendingDeposits from './tabs/deposits/PendingDeposits.tsx';
 import ApprovedDeposits from './tabs/deposits/ApprovedDeposits.tsx';
@@ -84,7 +86,9 @@ type MenuType =
     | 'WITHDRAWALS_ALL'
     | 'WITHDRAWALS_PENDING'
     | 'WITHDRAWALS_APPROVED'
-    | 'WITHDRAWALS_REJECTED';
+    | 'WITHDRAWALS_REJECTED'
+    | 'SITE_SETTINGS';
+import SiteSettings from './SiteSettings';
 
 import { CommissionPlan, CommissionGroup, CommissionHistoryEntry } from './affiliate/types';
 
@@ -93,6 +97,7 @@ const AdminPanel: React.FC<AdminPanelProps> = ({ settings, onUpdate, trades, use
         const [commissionPlans, setCommissionPlans] = useState<CommissionPlan[]>([]);
         const [commissionGroups, setCommissionGroups] = useState<CommissionGroup[]>([]);
         const [commissionHistory, setCommissionHistory] = useState<CommissionHistoryEntry[]>([]);
+        const { config } = useSiteConfig();
     const [activeMenu, setActiveMenu] = useState<MenuType>('DASHBOARD');
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
     // Always require login on panel entry (dev fallback). Do not auto-trust localStorage.
@@ -351,6 +356,7 @@ const AdminPanel: React.FC<AdminPanelProps> = ({ settings, onUpdate, trades, use
                 className="flex h-full w-full overflow-hidden font-binance relative"
                 style={{ backgroundColor: theme.backgroundColor, color: theme.textColor }}
         >
+          <RealtimeTransactions />
       
       {/* ================= MODALS ================= */}
       
@@ -375,13 +381,12 @@ const AdminPanel: React.FC<AdminPanelProps> = ({ settings, onUpdate, trades, use
 	  	  style={themedSidebarStyle}
             >
                 <div className={`p-6 flex items-center justify-between border-b ${isLight ? 'border-[#e5e7eb]' : 'border-[#2b3139]'}`}>
-          <div>
-            <h1 className="text-2xl font-bold tracking-tight">
-                <span className="text-[#0f172a]">SMBinary</span>
-                <span className="text-[#2563eb]">.COM</span>
-            </h1>
-            <span className="text-[10px] text-[#6b7280] font-bold uppercase tracking-[2px]">Admin Terminal</span>
-          </div>
+                <div>
+                        <h1 className="text-2xl font-bold tracking-tight">
+                                <span className="text-[#0f172a]">{config.siteName}</span>
+                        </h1>
+                        <span className="text-[10px] text-[#6b7280] font-bold uppercase tracking-[2px]">Admin Terminal</span>
+                    </div>
           <button onClick={() => setIsSidebarOpen(false)} className="lg:hidden text-[#848e9c]"><i className="fa-solid fa-xmark text-xl"></i></button>
         </div>
                 <nav className="flex-1 py-3 overflow-y-auto custom-scrollbar space-y-1.5">
@@ -442,6 +447,7 @@ const AdminPanel: React.FC<AdminPanelProps> = ({ settings, onUpdate, trades, use
           <SidebarItem id="ASSETS" iconClass="fa-solid fa-coins" label="Market Assets" />
           <SidebarItem id="AI" iconClass="fa-solid fa-robot" label="AI Analyst" />
                     <SidebarItem id="SYSTEM_SETTINGS" iconClass="fa-solid fa-gear" label="System Settings" />
+                    <SidebarItem id="SITE_SETTINGS" iconClass="fa-solid fa-paint-brush" label="Branding" />
         </nav>
       </aside>
 
@@ -755,6 +761,12 @@ const AdminPanel: React.FC<AdminPanelProps> = ({ settings, onUpdate, trades, use
 
                     {activeMenu === 'SYSTEM_SETTINGS' && (
                         <SystemSettingsTab settings={settings} onUpdate={onUpdate} theme={theme} />
+                    )}
+
+                    {activeMenu === 'SITE_SETTINGS' && (
+                        <div className="flex-1 px-6 py-5">
+                            <SiteSettings />
+                        </div>
                     )}
 
                     {activeMenu === 'BROADCAST' && (

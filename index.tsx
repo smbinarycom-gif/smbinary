@@ -2,6 +2,8 @@
 import React from 'react';
 import ReactDOM from 'react-dom/client';
 import Router from './Router.tsx';
+import { AuthProvider } from './auth/AuthProvider';
+import { SiteConfigProvider } from './shared/siteConfig';
 // Device detection: perform quick tagging before initial render for immediate CSS tweaks
 if (typeof window !== 'undefined') {
   try {
@@ -22,6 +24,10 @@ if (!rootElement) {
 const root = ReactDOM.createRoot(rootElement);
 root.render(
   <React.StrictMode>
-    <Router />
+    <SiteConfigProvider>
+      <AuthProvider>
+        <Router />
+      </AuthProvider>
+    </SiteConfigProvider>
   </React.StrictMode>
 );

@@ -390,8 +390,35 @@ const UserDetailView: React.FC<UserDetailViewProps> = ({ user, onBack, onUpdate,
                                          </div>
                                      </div>
                                      <div className="flex gap-4 mt-6 pt-6 border-t border-[#2b3139]">
-                                         <button onClick={() => onUpdate({...user, kycStatus: 'VERIFIED'})} className="flex-1 bg-[#0ecb81] text-white py-3 rounded-lg text-sm font-bold hover:bg-[#0aa869] transition-all">APPROVE DOCUMENTS</button>
-                                         <button onClick={() => onUpdate({...user, kycStatus: 'REJECTED'})} className="flex-1 bg-[#f6465d] text-white py-3 rounded-lg text-sm font-bold hover:bg-[#e63737] transition-all">REJECT DOCUMENTS</button>
+                                         <button onClick={async () => {
+                                             try {
+                                                 const mod = await import('../../supabaseClient');
+                                                 const sessionRes = await mod.supabase.auth.getSession();
+                                                 const token = (sessionRes as any)?.data?.session?.access_token;
+                                                 const res = await fetch('/api/admin-kyc-review', { method: 'POST', headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` }, body: JSON.stringify({ userId: user.id, action: 'approve' }) });
+                                                 const json = await res.json();
+                                                 if (!res.ok) throw new Error(json.error || 'Failed');
+                                                 onUpdate({ ...user, kycStatus: 'VERIFIED' });
+                                                 notify.success('KYC approved');
+                                             } catch (err: any) {
+                                                 notify.error(err?.message || 'Failed to approve');
+                                             }
+                                         }} className="flex-1 bg-[#0ecb81] text-white py-3 rounded-lg text-sm font-bold hover:bg-[#0aa869] transition-all">APPROVE DOCUMENTS</button>
+                                         <button onClick={async () => {
+                                             const reason = prompt('Reason for rejection (optional)') || '';
+                                             try {
+                                                 const mod = await import('../../supabaseClient');
+                                                 const sessionRes = await mod.supabase.auth.getSession();
+                                                 const token = (sessionRes as any)?.data?.session?.access_token;
+                                                 const res = await fetch('/api/admin-kyc-review', { method: 'POST', headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` }, body: JSON.stringify({ userId: user.id, action: 'reject', reason }) });
+                                                 const json = await res.json();
+                                                 if (!res.ok) throw new Error(json.error || 'Failed');
+                                                 onUpdate({ ...user, kycStatus: 'REJECTED' });
+                                                 notify.success('KYC rejected');
+                                             } catch (err: any) {
+                                                 notify.error(err?.message || 'Failed to reject');
+                                             }
+                                         }} className="flex-1 bg-[#f6465d] text-white py-3 rounded-lg text-sm font-bold hover:bg-[#e63737] transition-all">REJECT DOCUMENTS</button>
                                      </div>
                                  </div>
                              </div>

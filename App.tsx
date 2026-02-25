@@ -6,6 +6,11 @@ import UserPanel from './user/UserPanel.tsx';
 import AdminPanel from './admin/AdminPanel.tsx';
 import { ToastContainer, notify } from './shared/notify';
 import { ConfirmDialog } from './shared/confirm';
+import LandingPage from './LandingPage';
+import UserAuthScreen from './auth/UserAuthScreen';
+import ProtectedRoute from './auth/ProtectedRoute';
+import useAuth from './auth/useAuth';
+import { supabase } from './supabaseClient';
 
 interface StoredUser {
   email: string;
@@ -13,189 +18,6 @@ interface StoredUser {
   name: string;
   createdAt: number;
 }
-
-interface UserAuthScreenProps {
-  onSubmit: (
-    mode: 'LOGIN' | 'SIGNUP',
-    payload: { email: string; password: string; name?: string }
-  ) => void;
-  embedded?: boolean;
-}
-
-export const UserAuthScreen: React.FC<UserAuthScreenProps & { initialMode?: 'LOGIN' | 'SIGNUP' }> = ({ onSubmit, embedded, initialMode }) => {
-  const [mode, setMode] = useState<'LOGIN' | 'SIGNUP'>(initialMode || 'LOGIN');
-  const [name, setName] = useState('');
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
-  const [loading, setLoading] = useState(false);
-
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!email || !password || (mode === 'SIGNUP' && !name)) return;
-    setLoading(true);
-    onSubmit(mode, { email: email.trim(), password, name: name.trim() || undefined });
-    setLoading(false);
-  };
-
-  const formContent = (
-    <div className="w-full max-w-md bg-gradient-to-br from-slate-900 via-slate-950 to-black border border-slate-800 rounded-2xl sm:rounded-3xl shadow-2xl shadow-black/60 p-4 sm:p-8 space-y-6 mx-auto mt-8 sm:mt-16" style={{ minWidth: 0 }}>
-      <div className="pt-4 text-center space-y-2">
-        <h1 className="text-3xl sm:text-4xl font-black tracking-tight text-white drop-shadow-lg">Welcome to <span className="text-emerald-400">SMBinary.COM</span></h1>
-        <p className="text-xs text-slate-400 font-semibold uppercase tracking-[0.25em]">Secure Trading Access</p>
-      </div>
-      <form onSubmit={handleSubmit} className="space-y-4 text-sm">
-        {mode === 'SIGNUP' && (
-          <div className="space-y-1">
-            <label className="text-[11px] font-semibold text-slate-400 uppercase tracking-wide">Full Name</label>
-            <input
-              type="text"
-              value={name}
-              onChange={(e) => setName(e.target.value)}
-              className="w-full rounded-lg bg-black/40 border border-emerald-400/20 px-3 py-2 text-xs focus:outline-none focus:border-emerald-400"
-              placeholder="John Doe"
-            />
-          </div>
-        )}
-        <div className="space-y-1">
-          <label className="text-[11px] font-semibold text-slate-400 uppercase tracking-wide">Email</label>
-          <input
-            type="email"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-            className="w-full rounded-lg bg-black/40 border border-emerald-400/20 px-3 py-2 text-xs focus:outline-none focus:border-emerald-400"
-            placeholder="you@example.com"
-          />
-        </div>
-        <div className="space-y-1">
-          <label className="text-[11px] font-semibold text-slate-400 uppercase tracking-wide">Password</label>
-          <input
-            type="password"
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-            className="w-full rounded-lg bg-black/40 border border-emerald-400/20 px-3 py-2 text-xs focus:outline-none focus:border-emerald-400"
-            placeholder="••••••••"
-          />
-        </div>
-        <button
-          type="submit"
-          disabled={loading}
-          className="w-full mt-2 py-2.5 rounded-lg bg-gradient-to-r from-emerald-400 to-cyan-400 text-black text-xs font-black uppercase tracking-[0.25em] shadow-lg hover:from-emerald-500 hover:to-cyan-500 transition-all disabled:opacity-60 disabled:pointer-events-none"
-        >
-          {mode === 'LOGIN' ? 'Enter Terminal' : 'Create Account'}
-        </button>
-        <p className="text-[10px] text-slate-500 text-center mt-2">This is a demo auth layer (no real backend).</p>
-      </form>
-    </div>
-  );
-
-  // Add Home navigation
-  const header = (
-    <header className="sticky top-0 z-40 border-b border-slate-800/80 bg-slate-950/85 backdrop-blur-xl w-full">
-      <div className="flex h-16 items-center justify-between px-4">
-        {/* Logo */}
-        <div className="flex items-center space-x-2">
-          <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-gradient-to-br from-emerald-400 to-cyan-500 shadow-lg shadow-emerald-500/40">
-            <span className="text-lg font-black text-slate-950">GX</span>
-          </div>
-          <div className="flex-col text-xs font-semibold text-slate-300">
-            <span className="text-sm font-black tracking-tight text-white">SMBinary.COM</span>
-            <span className="text-[10px] uppercase tracking-[0.25em] text-emerald-300/80">Options Trading</span>
-          </div>
-        </div>
-        {/* Center nav */}
-        <nav className="hidden md:flex items-center space-x-8 text-xs font-medium text-slate-300">
-          <a href="#demo" className="hover:text-emerald-300 transition-colors">Demo account</a>
-          <a href="#about" className="hover:text-emerald-300 transition-colors">About us</a>
-          <a href="#faq" className="hover:text-emerald-300 transition-colors">FAQ</a>
-          <a href="#blog" className="hover:text-emerald-300 transition-colors">Blog</a>
-        </nav>
-        {/* Right actions */}
-        <div className="flex items-center space-x-3 text-xs">
-          <button
-            className="rounded-full border border-slate-500/60 px-4 py-1.5 font-semibold text-slate-100 hover:border-emerald-400 hover:text-emerald-300 transition-colors"
-            onClick={() => {
-              if (typeof window !== 'undefined') {
-                window.history.pushState({}, '', '/');
-                window.dispatchEvent(new PopStateEvent('popstate'));
-              }
-            }}
-          >
-            Home
-          </button>
-          <button
-            className={`rounded-full border border-slate-500/60 px-4 py-1.5 font-semibold text-slate-100 hover:border-emerald-400 hover:text-emerald-300 transition-colors ${mode === 'LOGIN' ? 'bg-emerald-500 text-black border-emerald-400' : ''}`}
-            onClick={() => setMode('LOGIN')}
-          >
-            Log in
-          </button>
-          <button
-            className={`rounded-full bg-emerald-500 px-4 py-1.5 font-semibold text-slate-950 shadow-lg shadow-emerald-500/40 hover:bg-emerald-400 transition-transform hover:-translate-y-0.5 ${mode === 'SIGNUP' ? 'ring-2 ring-emerald-400' : ''}`}
-            onClick={() => setMode('SIGNUP')}
-          >
-            Sign up
-          </button>
-          <button className="inline-flex items-center space-x-1 rounded-full border border-slate-600/70 bg-slate-900/60 px-3 py-1.5 font-semibold text-slate-200 text-[11px]">
-            <span>EN</span>
-            <i className="fa-solid fa-chevron-down text-[9px]" />
-          </button>
-        </div>
-      </div>
-    </header>
-  );
-
-  if (embedded) return formContent;
-
-  return (
-    <div className="flex flex-col h-[100dvh] w-screen bg-[#020617] text-white">
-      {header}
-      <div className="flex-1 flex items-center justify-center px-4">
-        {formContent}
-      </div>
-    </div>
-  );
-};
-
-interface LandingPageProps {
-  onAuthSubmit: UserAuthScreenProps['onSubmit'];
-}
-
-const LandingPage: React.FC<LandingPageProps> = ({ onAuthSubmit }) => {
-  return (
-    <div className="flex h-[100dvh] w-screen bg-[#020617] text-white overflow-hidden">
-      <div className="max-w-6xl mx-auto w-full px-4 md:px-8 flex flex-col md:flex-row items-center justify-center gap-10 md:gap-16">
-        <div className="flex-1 space-y-6 text-center md:text-left">
-          <div className="inline-flex items-center px-3 py-1.5 rounded-full border border-white/10 bg-white/5 text-[10px] font-black uppercase tracking-[0.25em] text-slate-300">
-            <span className="w-1.5 h-1.5 rounded-full bg-[#0ecb81] mr-2 animate-pulse" />
-            Real-Time Binary Engine
-          </div>
-          <h1 className="text-3xl sm:text-4xl md:text-5xl font-black tracking-tight leading-tight">
-            Trade digital contracts on a
-            <span className="text-[#0ecb81]"> simulated </span>
-            engine.
-          </h1>
-          <p className="text-sm sm:text-base text-slate-400 max-w-xl mx-auto md:mx-0">
-            Practice high‑frequency binary trading with live‑like price action,
-            OTC controls and AI overlays — all in a safe demo environment.
-          </p>
-          <div className="flex flex-col sm:flex-row sm:items-center gap-3 justify-center md:justify-start text-xs">
-            <div className="flex items-center space-x-2 text-slate-400">
-              <i className="fa-solid fa-shield-halved text-[#0ecb81]" />
-              <span>Demo only · No real funds</span>
-            </div>
-            <div className="flex items-center space-x-2 text-slate-500">
-              <i className="fa-solid fa-gauge-high text-[#eab308]" />
-              <span>Lightning-fast execution</span>
-            </div>
-          </div>
-        </div>
-
-        <div className="flex-1 flex justify-center md:justify-end w-full">
-          <UserAuthScreen onSubmit={onAuthSubmit} embedded />
-        </div>
-      </div>
-    </div>
-  );
-};
 
 interface AppProps {
   authScreenMode?: 'LOGIN' | 'SIGNUP';
@@ -208,7 +30,6 @@ const App: React.FC<AppProps> = ({ authScreenMode }) => {
     return 'USER';
   });
 
-  const [authUser, setAuthUser] = useState<{ email: string; name: string } | null>(null);
   const [showAuthOverlay, setShowAuthOverlay] = useState(false);
 
   useEffect(() => {
@@ -220,33 +41,7 @@ const App: React.FC<AppProps> = ({ authScreenMode }) => {
     return () => window.removeEventListener('popstate', handlePopState);
   }, []);
 
-  useEffect(() => {
-    if (typeof window === 'undefined') return;
-    try {
-      const raw = window.localStorage.getItem('smbinary_auth_user');
-      if (raw) {
-        const parsed = JSON.parse(raw) as { email: string; name: string };
-        if (parsed && parsed.email) setAuthUser(parsed);
-      }
-    } catch {
-      // ignore
-    }
-  }, []);
-
-  // For live usage, if no user is authenticated on the user view and
-  // we're not on an explicit auth screen, automatically create a demo
-  // user session so the User Panel opens directly.
-  useEffect(() => {
-    if (typeof window === 'undefined') return;
-    if (authUser || viewMode !== 'USER' || authScreenMode) return;
-    const demoUser = { email: 'demo@geminix.pro', name: 'Demo User' };
-    try {
-      window.localStorage.setItem('smbinary_auth_user', JSON.stringify(demoUser));
-    } catch {
-      // ignore storage errors
-    }
-    setAuthUser(demoUser);
-  }, [authUser, viewMode, authScreenMode]);
+  // No automatic demo login: require explicit signup/login to access trading.
 
   const navigateTo = (mode: 'USER' | 'ADMIN') => {
     if (typeof window === 'undefined') {
@@ -260,56 +55,10 @@ const App: React.FC<AppProps> = ({ authScreenMode }) => {
     setViewMode(mode);
   };
 
-  const handleAuthSubmit = (
-    mode: 'LOGIN' | 'SIGNUP',
-    payload: { email: string; password: string; name?: string }
-  ) => {
-    if (typeof window === 'undefined') return;
-    const key = 'smbinary_users';
-    let usersStore: StoredUser[] = [];
-    try {
-      const raw = window.localStorage.getItem(key);
-      if (raw) usersStore = JSON.parse(raw) as StoredUser[];
-    } catch {
-      usersStore = [];
-    }
-
-    const email = payload.email.toLowerCase();
-
-    if (mode === 'SIGNUP') {
-      if (usersStore.some(u => u.email === email)) {
-        notify.error('Account already exists with this email');
-        return;
-      }
-      const name = payload.name || email.split('@')[0];
-      const newUser: StoredUser = {
-        email,
-        password: payload.password,
-        name,
-        createdAt: Date.now()
-      };
-      usersStore.push(newUser);
-      window.localStorage.setItem(key, JSON.stringify(usersStore));
-      const authInfo = { email, name };
-      window.localStorage.setItem('smbinary_auth_user', JSON.stringify(authInfo));
-      setAuthUser(authInfo);
-      notify.success('Account created. Logged in as demo user.');
-      return;
-    }
-
-    const existing = usersStore.find(
-      u => u.email === email && u.password === payload.password
-    );
-    if (!existing) {
-      notify.error('Invalid email or password');
-      return;
-    }
-    const authInfo = { email: existing.email, name: existing.name };
-    window.localStorage.setItem('smbinary_auth_user', JSON.stringify(authInfo));
-    setAuthUser(authInfo);
-    notify.success('Welcome back');
-  };
+  // App-level auth flow delegated to AuthProvider via `useAuth` hook below.
   
+  const auth = useAuth();
+
   // Managed Assets State
   const [assets, setAssets] = useState<Asset[]>(INITIAL_ASSETS);
   
@@ -977,6 +726,85 @@ const App: React.FC<AppProps> = ({ authScreenMode }) => {
     return demoUsers;
   });
 
+  // If Supabase is configured, load users from DB and subscribe to realtime changes
+  useEffect(() => {
+    let mounted = true;
+    if (!supabase || !supabase.from) return;
+
+    (async () => {
+      try {
+        const { data, error } = await supabase.from('users').select('*');
+        if (!error && data && mounted) {
+          // Map DB rows to app User type where possible
+          const mapped = (data as any[]).map((r) => ({
+            id: r.id || r.user_id || (r.email ? r.email : Math.random().toString(36).slice(2)),
+            name: r.name || r.full_name || r.user_metadata?.name || r.email?.split('@')[0] || 'User',
+            email: r.email || '',
+            password: r.password || '',
+            balance: r.balance || 0,
+            bonusBalance: r.bonusBalance || 0,
+            status: r.status || 'ACTIVE',
+            forceResult: r.forceResult || 'NONE',
+            maxBetSize: r.maxBetSize || 1000,
+            dailyProfitLimit: r.dailyProfitLimit || 0,
+            payoutOverride: r.payoutOverride || 0,
+            tradeDelayMs: r.tradeDelayMs || 0,
+            joinedAt: r.created_at ? new Date(r.created_at).getTime() : Date.now(),
+            ipAddress: r.ipAddress || '',
+            country: r.country || '',
+            device: r.device || '',
+            lastLogin: r.last_login ? new Date(r.last_login).getTime() : Date.now(),
+            totalDeposited: r.totalDeposited || 0,
+            totalWithdrawn: r.totalWithdrawn || 0,
+            totalTurnover: r.totalTurnover || 0,
+            netPnL: r.netPnL || 0,
+            isBalanceFrozen: r.isBalanceFrozen || false,
+            forcePasswordReset: r.forcePasswordReset || false,
+            twoFactorEnabled: r.twoFactorEnabled || false,
+            kycStatus: r.kyc_status || r.kycStatus || 'UNVERIFIED',
+            kycDocs: r.kycDocs || {},
+            riskScore: r.riskScore || 0,
+            riskLabel: r.riskLabel || '',
+            tags: r.tags || [],
+            activityLogs: r.activityLogs || [],
+            adminNotes: r.adminNotes || [],
+            referralCode: r.referralCode || '',
+          } as User));
+          setUsers(mapped.concat([]));
+        }
+      } catch (e) {
+        // ignore fetch errors
+      }
+    })();
+
+    const channel = supabase.channel('public:users')
+      .on('postgres_changes', { event: '*', schema: 'public', table: 'users' }, (payload) => {
+        const ev = payload.eventType; // INSERT, UPDATE, DELETE
+        const newRow = payload.new as any;
+        const oldRow = payload.old as any;
+        if (ev === 'INSERT') {
+          setUsers(prev => {
+            const u = {
+              id: newRow.id || newRow.email,
+              name: newRow.name || newRow.full_name || newRow.email.split('@')[0],
+              email: newRow.email || '',
+            } as any;
+            return [u, ...prev];
+          });
+        } else if (ev === 'UPDATE') {
+          setUsers(prev => prev.map(p => (p.id === newRow.id || p.email === newRow.email) ? ({ ...p, ...(newRow as any) }) : p));
+        } else if (ev === 'DELETE') {
+          setUsers(prev => prev.filter(p => p.id !== oldRow.id && p.email !== oldRow.email));
+        }
+      })
+      .subscribe();
+
+    return () => {
+      mounted = false;
+      try { supabase.removeChannel(channel); } catch (e) {}
+    };
+  }, []);
+
   const [marketSettings, setMarketSettings] = useState<MarketSettings>({
     marketMode: 'OTC',
     payoutMultiplier: 1.0,
@@ -1481,7 +1309,10 @@ const App: React.FC<AppProps> = ({ authScreenMode }) => {
       }}
     >
       {viewMode === 'USER' ? (
-        authUser ? (
+        <ProtectedRoute fallback={<LandingPage onAuthSubmit={(mode, payload) => {
+          if (mode === 'SIGNUP') return auth.signUp(payload as any);
+          return auth.signIn(payload as any);
+        }} /> }>
           <UserPanel 
             selectedAsset={selectedAsset} setSelectedAsset={setSelectedAsset}
             candleHistory={candleHistory} currentPrice={currentPrice} 
@@ -1496,11 +1327,7 @@ const App: React.FC<AppProps> = ({ authScreenMode }) => {
             onExit={() => navigateTo('USER')} paymentRequests={paymentRequests}
             onDeposit={handleDepositRequest} onWithdraw={handleWithdrawRequest}
           />
-        ) : (
-          <div className="flex-1 flex items-center justify-center bg-black text-slate-300 text-sm">
-            Initializing demo trading terminal...
-          </div>
-        )
+        </ProtectedRoute>
       ) : (
         <AdminPanel 
           settings={marketSettings} onUpdate={setMarketSettings} 
